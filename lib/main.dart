@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:v2ray_stk/services/preferences_service.dart';
 
 void main() => runApp(const MyApp());
 
@@ -131,6 +132,29 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   bool _isPersian = true;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLanguage();
+  }
+
+  Future<void> _loadLanguage() async {
+    final lang = await PreferencesService.getLanguage();
+    setState(() {
+      _isPersian = lang == 'fa';
+      _isLoading = false;
+    });
+  }
+
+  Future<void> _toggleLanguage(bool value) async {
+    final lang = value ? 'fa' : 'en';
+    await PreferencesService.saveLanguage(lang);
+    setState(() {
+      _isPersian = value;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -142,41 +166,156 @@ class _SettingsPageState extends State<SettingsPage> {
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
       ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.language),
+                      title: Text(_isPersian ? 'زبان: فارسی' : 'زبان: انگلیسی'),
+                      trailing: Switch(
+                        value: _isPersian,
+                        onChanged: _toggleLanguage,
+                        activeColor: colorScheme.primary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.vpn_key),
+                      title: const Text('مدیریت کانفیگ‌ها'),
+                      subtitle: const Text('افزودن، ویرایش و حذف کانفیگ‌ها'),
+                      onTap: () {},
+                    ),
+                  ),
+                  Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.speed),
+                      title: const Text('تنظیمات اتصال'),
+                      subtitle: const Text('Kill Switch، Mux و ...'),
+                      onTap: () {},
+                    ),
+                  ),
+                  Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.lock_reset),
+                      title: const Text('تغییر رمز عبور ادمین'),
+                      subtitle: const Text('تغییر رمز عبور پنل مدیریت'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ChangePasswordPage(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+    );
+  }
+}
+
+// ========== صفحه تغییر رمز عبور ==========
+class ChangePasswordPage extends StatefulWidget {
+  const ChangePasswordPage({super.key});
+
+  @override
+  State<ChangePasswordPage> createState() => _ChangePasswordPageState();
+}
+
+class _ChangePasswordPageState extends State<ChangePasswordPage> {
+  final TextEditingController _oldController = TextEditingController();
+  final TextEditingController _newController = TextEditingController();
+  final TextEditingController _confirmController = TextEditingController();
+  String _message = '';
+
+  Future<void> _changePassword() async {
+    if (_newController.text != _confirmController.text) {
+      setState(() => _message = 'رمز جدید و تأیید آن مطابقت ندارند');
+      return;
+    }
+    if (_newController.text.length < 4) {
+      setState(() => _message = 'رمز جدید باید حداقل ۴ کاراکتر باشد');
+      return;
+    }
+    final success = await PreferencesService.changePassword(
+      _oldController.text,
+      _newController.text,
+    );
+    if (success) {
+      setState(() => _message = '✅ رمز عبور با موفقیت تغییر کرد');
+      _oldController.clear();
+      _newController.clear();
+      _confirmController.clear();
+    } else {
+      setState(() => _message = '❌ رمز فعلی اشتباه است');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('تغییر رمز عبور'),
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.onPrimary,
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(24.0),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.language),
-                title: Text(_isPersian ? 'زبان: فارسی' : 'زبان: انگلیسی'),
-                trailing: Switch(
-                  value: _isPersian,
-                  onChanged: (value) {
-                    setState(() {
-                      _isPersian = value;
-                    });
-                  },
-                  activeColor: colorScheme.primary,
-                ),
+            TextField(
+              controller: _oldController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: 'رمز فعلی',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _newController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: 'رمز جدید',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _confirmController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: 'تأیید رمز جدید',
+                border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 20),
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.vpn_key),
-                title: const Text('مدیریت کانفیگ‌ها'),
-                subtitle: const Text('افزودن، ویرایش و حذف کانفیگ‌ها'),
-                onTap: () {},
+            FilledButton(
+              onPressed: _changePassword,
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
               ),
+              child: const Text('تغییر رمز'),
             ),
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.speed),
-                title: const Text('تنظیمات اتصال'),
-                subtitle: const Text('Kill Switch، Mux و ...'),
-                onTap: () {},
+            const SizedBox(height: 16),
+            Text(
+              _message,
+              style: TextStyle(
+                color: _message.contains('✅') ? Colors.green : Colors.red,
+                fontSize: 16,
               ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -227,9 +366,21 @@ class AdminLoginPage extends StatefulWidget {
 class _AdminLoginPageState extends State<AdminLoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   String _errorMessage = '';
+  bool _isLoading = true;
 
-  void _login() {
-    const String correctPassword = '1234';
+  @override
+  void initState() {
+    super.initState();
+    _loadPassword();
+  }
+
+  Future<void> _loadPassword() async {
+    // فقط برای اطمینان از اینکه PreferencesService کار می‌کند
+    setState(() => _isLoading = false);
+  }
+
+  Future<void> _login() async {
+    final correctPassword = await PreferencesService.getPassword();
     if (_passwordController.text == correctPassword) {
       widget.onLogin();
     } else {
@@ -249,46 +400,48 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.admin_panel_settings,
-              size: 80,
-              color: colorScheme.primary,
-            ),
-            const SizedBox(height: 30),
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'رمز عبور',
-                border: const OutlineInputBorder(),
-                errorText: _errorMessage.isNotEmpty ? _errorMessage : null,
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.admin_panel_settings,
+                    size: 80,
+                    color: colorScheme.primary,
+                  ),
+                  const SizedBox(height: 30),
+                  TextField(
+                    controller: _passwordController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: 'رمز عبور',
+                      border: const OutlineInputBorder(),
+                      errorText: _errorMessage.isNotEmpty ? _errorMessage : null,
+                    ),
+                    onSubmitted: (_) => _login(),
+                  ),
+                  const SizedBox(height: 20),
+                  FilledButton(
+                    onPressed: _login,
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                    ),
+                    child: const Text(
+                      'ورود',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ),
+                ],
               ),
-              onSubmitted: (_) => _login(),
             ),
-            const SizedBox(height: 20),
-            FilledButton(
-              onPressed: _login,
-              style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-              ),
-              child: const Text(
-                'ورود',
-                style: TextStyle(fontSize: 18),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
 
-// ========== صفحه مدیریت ادمین (بدون اسکنر) ==========
+// ========== صفحه مدیریت ادمین ==========
 class AdminPage extends StatelessWidget {
   final VoidCallback onLogout;
 
@@ -301,8 +454,7 @@ class AdminPage extends StatelessWidget {
         title: const Text('اسکن QR'),
         content: const Text(
           'قابلیت اسکن QR در حال توسعه است.\n'
-          'به زودی اضافه می‌شود.\n'
-          '(برای اضافه کردن کانفیگ، از لینک اشتراک استفاده کنید)',
+          'به زودی اضافه می‌شود.',
           textAlign: TextAlign.center,
         ),
         actions: [
