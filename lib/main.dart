@@ -288,7 +288,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
   }
 }
 
-// ========== صفحه مدیریت ادمین (با دکمه QR شبیه‌سازی‌شده) ==========
+// ========== صفحه مدیریت ادمین (بدون اسکنر) ==========
 class AdminPage extends StatelessWidget {
   final VoidCallback onLogout;
 
