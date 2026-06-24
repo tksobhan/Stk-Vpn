@@ -288,11 +288,32 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
   }
 }
 
-// ========== صفحه مدیریت ادمین ==========
+// ========== صفحه مدیریت ادمین (با دکمه QR شبیه‌سازی‌شده) ==========
 class AdminPage extends StatelessWidget {
   final VoidCallback onLogout;
 
   const AdminPage({super.key, required this.onLogout});
+
+  void _showQrPlaceholder(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('اسکن QR'),
+        content: const Text(
+          'قابلیت اسکن QR در حال توسعه است.\n'
+          'به زودی اضافه می‌شود.\n'
+          '(برای اضافه کردن کانفیگ، از لینک اشتراک استفاده کنید)',
+          textAlign: TextAlign.center,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('متوجه شدم'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -311,24 +332,33 @@ class AdminPage extends StatelessWidget {
           ),
         ],
       ),
-      body: const Center(
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.admin_panel_settings,
               size: 80,
               color: Colors.green,
             ),
-            SizedBox(height: 20),
-            Text(
+            const SizedBox(height: 20),
+            const Text(
               '✅ وارد شدید',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 10),
-            Text(
+            const SizedBox(height: 10),
+            const Text(
               'در اینجا می‌توانید کانفیگ‌ها را مدیریت کنید',
               style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 40),
+            FilledButton.icon(
+              onPressed: () => _showQrPlaceholder(context),
+              icon: const Icon(Icons.qr_code_scanner),
+              label: const Text('اسکن QR (به زودی)'),
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+              ),
             ),
           ],
         ),
