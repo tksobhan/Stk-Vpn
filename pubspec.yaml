@@ -1,5 +1,5 @@
-name: my_vpn_app
-description: A simple VPN app
+name: v2ray_stk
+description: V2RAY stk - VPN Client
 publish_to: 'none'
 version: 1.0.1+1
 

@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.my_vpn_app"
+    namespace = "com.tksobhan.v2ray_stk"
     compileSdk = 34
 
     compileOptions {
@@ -18,11 +18,11 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.my_vpn_app"
+        applicationId = "com.tksobhan.v2ray_stk"
         minSdk = 21
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.1"
     }
 
     buildTypes {
