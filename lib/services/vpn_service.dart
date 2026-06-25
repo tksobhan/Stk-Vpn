@@ -1,52 +1,28 @@
-import 'package:flutter_v2ray_client/flutter_v2ray.dart';
+import 'package:flutter_singbox_client/flutter_singbox_client.dart';
+import 'dart:async';
 
 class VpnService {
   static final VpnService _instance = VpnService._internal();
   factory VpnService() => _instance;
   VpnService._internal();
 
-  V2ray? _v2ray;
+  final Singbox _singbox = Singbox();
   bool _isConnected = false;
-  bool _isInitialized = false;
 
   bool get isConnected => _isConnected;
 
-  Future<void> initialize({
-    String notificationIconResourceType = 'mipmap',
-    String notificationIconResourceName = 'ic_launcher',
-  }) async {
-    if (_isInitialized) return;
-
-    _v2ray = V2ray(
-      onStatusChanged: (status) {
-        // در صورت نیاز می‌توان وضعیت را پردازش کرد
-        // اما فعلاً از _isConnected استفاده می‌کنیم
-      },
-    );
-
-    await _v2ray!.initialize(
-      notificationIconResourceType: notificationIconResourceType,
-      notificationIconResourceName: notificationIconResourceName,
-    );
-
-    _isInitialized = true;
-    print('✅ V2Ray مقداردهی اولیه شد');
+  Future<void> initialize() async {
+    // Singbox به مقداردهی اولیه خاصی نیاز ندارد
+    print('✅ Sing-box مقداردهی اولیه شد');
   }
 
   Future<void> startVpn(String config) async {
-    if (!_isInitialized) {
-      await initialize();
-    }
-
     try {
-      await _v2ray!.startV2Ray(
-        config: config,
-        remark: 'V2RAY stk',
-      );
+      await _singbox.start(config);
       _isConnected = true;
-      print('✅ V2Ray متصل شد');
+      print('✅ Sing-box متصل شد');
     } catch (e) {
-      print('❌ خطا در اتصال V2Ray: $e');
+      print('❌ خطا در اتصال Sing-box: $e');
       _isConnected = false;
       rethrow;
     }
@@ -54,11 +30,11 @@ class VpnService {
 
   Future<void> stopVpn() async {
     try {
-      await _v2ray?.stopV2Ray();
+      await _singbox.stop();
       _isConnected = false;
-      print('❌ V2Ray قطع شد');
+      print('❌ Sing-box قطع شد');
     } catch (e) {
-      print('❌ خطا در قطع V2Ray: $e');
+      print('❌ خطا در قطع Sing-box: $e');
       rethrow;
     }
   }
@@ -71,12 +47,11 @@ class VpnService {
     }
   }
 
-  Future<String?> getServerDelay(String config) async {
+  Future<bool> isRunning() async {
     try {
-      final delay = await _v2ray?.getServerDelay(config: config);
-      return delay != null ? '${delay}ms' : null;
+      return await _singbox.isRunning();
     } catch (e) {
-      return null;
+      return false;
     }
   }
 }
