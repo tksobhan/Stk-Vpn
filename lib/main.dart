@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:v2ray_stk/services/preferences_service.dart';
+import 'package:v2ray_stk/services/vpn_service.dart';
 
 void main() => runApp(const MyApp());
 
@@ -65,17 +66,36 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool _isConnected = false;
+  final VpnService _vpnService = VpnService();
+  bool _isLoading = false;
 
-  void _toggleConnection() {
-    setState(() {
-      _isConnected = !_isConnected;
-    });
+  // یک کانفیگ نمونه (بعداً از صفحه مدیریت کانفیگ‌ها گرفته می‌شود)
+  static const String _sampleConfig = '''
+{
+  "log": { "level": "info" },
+  "inbounds": [ { "type": "tun" } ],
+  "outbounds": [ { "type": "direct" } ]
+}
+''';
+
+  Future<void> _toggleConnection() async {
+    if (_isLoading) return;
+    setState(() => _isLoading = true);
+    try {
+      await _vpnService.toggleVpn(_sampleConfig);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('خطا: ${e.toString()}')),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final isConnected = _vpnService.isConnected;
 
     return Scaffold(
       appBar: AppBar(
@@ -87,31 +107,32 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            if (_isLoading) const CircularProgressIndicator() else const SizedBox(height: 80),
             Icon(
-              _isConnected ? Icons.vpn_lock : Icons.vpn_key,
+              isConnected ? Icons.vpn_lock : Icons.vpn_key,
               size: 80,
-              color: _isConnected ? Colors.green : colorScheme.primary.withOpacity(0.5),
+              color: isConnected ? Colors.green : colorScheme.primary.withOpacity(0.5),
             ),
             const SizedBox(height: 20),
             Text(
-              _isConnected ? '✅ وصل شده' : '❌ قطع است',
+              isConnected ? '✅ وصل شده' : '❌ قطع است',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: _isConnected ? Colors.green : colorScheme.error,
+                color: isConnected ? Colors.green : colorScheme.error,
               ),
             ),
             const SizedBox(height: 40),
             FilledButton.icon(
-              onPressed: _toggleConnection,
-              icon: Icon(_isConnected ? Icons.stop : Icons.play_arrow),
+              onPressed: _isLoading ? null : _toggleConnection,
+              icon: Icon(isConnected ? Icons.stop : Icons.play_arrow),
               label: Text(
-                _isConnected ? 'قطع اتصال' : 'اتصال',
+                isConnected ? 'قطع اتصال' : 'اتصال',
                 style: const TextStyle(fontSize: 18),
               ),
               style: FilledButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                backgroundColor: _isConnected ? colorScheme.error : colorScheme.primary,
+                backgroundColor: isConnected ? colorScheme.error : colorScheme.primary,
                 foregroundColor: colorScheme.onPrimary,
               ),
             ),
@@ -189,10 +210,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       leading: const Icon(Icons.vpn_key),
                       title: const Text('مدیریت کانفیگ‌ها'),
                       subtitle: const Text('افزودن، ویرایش و حذف کانفیگ‌ها'),
-                      onTap: () {
-                        // فقط ادمین می‌تواند وارد شود
-                        // اینجا از طریق پنل ادمین انجام می‌شود
-                      },
+                      onTap: () {},
                     ),
                   ),
                   Card(
@@ -443,7 +461,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
   }
 }
 
-// ========== صفحه مدیریت ادمین (با دکمه مدیریت کانفیگ) ==========
+// ========== صفحه مدیریت ادمین ==========
 class AdminPage extends StatelessWidget {
   final VoidCallback onLogout;
 
@@ -506,7 +524,6 @@ class AdminPage extends StatelessWidget {
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 40),
-            // دکمه مدیریت کانفیگ‌ها (فقط ادمین)
             FilledButton.icon(
               onPressed: () {
                 Navigator.push(
@@ -547,7 +564,7 @@ class ConfigManagementPage extends StatefulWidget {
 }
 
 class _ConfigManagementPageState extends State<ConfigManagementPage> {
-  // داده‌های نمونه برای نمایش (فعلاً در حافظه)
+  // داده‌های نمونه (بعداً از SharedPreferences یا فایل خوانده می‌شود)
   List<Map<String, String>> _configs = [
     {'name': 'سرور ایران', 'address': 'ir.example.com', 'status': 'فعال'},
     {'name': 'سرور آلمان', 'address': 'de.example.com', 'status': 'غیرفعال'},
