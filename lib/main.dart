@@ -106,7 +106,6 @@ class _HomePageState extends State<HomePage> {
   Future<void> _initializeVpn() async {
     try {
       await _vpnService.initialize();
-      await _vpnService.refreshStatus();
     } catch (e) {
       print('خطا در مقداردهی اولیه VPN: $e');
     } finally {
@@ -123,7 +122,6 @@ class _HomePageState extends State<HomePage> {
     setState(() => _isLoading = true);
     try {
       await _vpnService.toggleVpn(_sampleConfig);
-      await _vpnService.refreshStatus();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('خطا: ${e.toString()}')),
@@ -195,7 +193,7 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-// ========== صفحه تنظیمات ==========
+// ========== بقیه صفحات (تنظیمات، ادمین، مدیریت کانفیگ) بدون تغییر ==========
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
@@ -295,7 +293,6 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 }
 
-// ========== صفحه تغییر رمز عبور ==========
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({super.key});
 
@@ -397,7 +394,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   }
 }
 
-// ========== صفحه ادمین (با ورود) ==========
 class AdminWrapper extends StatefulWidget {
   const AdminWrapper({super.key});
 
@@ -426,7 +422,6 @@ class _AdminWrapperState extends State<AdminWrapper> {
   }
 }
 
-// ========== صفحه ورود ادمین ==========
 class AdminLoginPage extends StatefulWidget {
   final VoidCallback onLogin;
 
@@ -513,7 +508,6 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
   }
 }
 
-// ========== صفحه مدیریت ادمین ==========
 class AdminPage extends StatelessWidget {
   final VoidCallback onLogout;
 
@@ -607,7 +601,6 @@ class AdminPage extends StatelessWidget {
   }
 }
 
-// ========== صفحه مدیریت کانفیگ‌ها (فقط ادمین) ==========
 class ConfigManagementPage extends StatefulWidget {
   const ConfigManagementPage({super.key});
 

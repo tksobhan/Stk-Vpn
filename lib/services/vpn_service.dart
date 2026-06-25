@@ -19,8 +19,8 @@ class VpnService {
 
     _v2ray = V2ray(
       onStatusChanged: (status) {
-        // وضعیت اتصال را بروزرسانی می‌کند (اگر status.state وجود داشته باشد)
-        // در صورت عدم وجود، از isRunning استفاده می‌کنیم
+        // در صورت نیاز می‌توان وضعیت را پردازش کرد
+        // اما فعلاً از _isConnected استفاده می‌کنیم
       },
     );
 
@@ -78,17 +78,5 @@ class VpnService {
     } catch (e) {
       return null;
     }
-  }
-
-  Future<bool> isRunning() async {
-    try {
-      return await _v2ray?.isRunning() ?? false;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  Future<void> refreshStatus() async {
-    _isConnected = await isRunning();
   }
 }
