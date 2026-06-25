@@ -1,25 +1,22 @@
-import 'package:flutter_v2ray_client/v2ray_client.dart';
+import 'dart:async';
 
 class VpnService {
   static final VpnService _instance = VpnService._internal();
   factory VpnService() => _instance;
   VpnService._internal();
 
-  final V2RayClient _client = V2RayClient.instance;
   bool _isConnected = false;
 
   bool get isConnected => _isConnected;
 
   Future<void> startVpn(String config) async {
     try {
-      await _client.start(
-        config: config,
-        remark: 'V2RAY stk',
-      );
+      // شبیه‌سازی اتصال با تأخیر
+      await Future.delayed(const Duration(seconds: 2));
       _isConnected = true;
-      print('✅ V2Ray متصل شد');
+      print('✅ VPN متصل شد (شبیه‌سازی)');
     } catch (e) {
-      print('❌ خطا در اتصال V2Ray: $e');
+      print('❌ خطا در اتصال VPN: $e');
       _isConnected = false;
       rethrow;
     }
@@ -27,11 +24,11 @@ class VpnService {
 
   Future<void> stopVpn() async {
     try {
-      await _client.stop();
+      await Future.delayed(const Duration(milliseconds: 500));
       _isConnected = false;
-      print('❌ V2Ray قطع شد');
+      print('❌ VPN قطع شد (شبیه‌سازی)');
     } catch (e) {
-      print('❌ خطا در قطع V2Ray: $e');
+      print('❌ خطا در قطع VPN: $e');
       rethrow;
     }
   }
@@ -41,14 +38,6 @@ class VpnService {
       await stopVpn();
     } else {
       await startVpn(config);
-    }
-  }
-
-  Future<bool> isRunning() async {
-    try {
-      return await _client.isRunning();
-    } catch (e) {
-      return false;
     }
   }
 }
