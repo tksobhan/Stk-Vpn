@@ -1,7 +1,7 @@
 name: v2ray_stk
 description: V2RAY stk - VPN Client
 publish_to: 'none'
-version: 1.0.17+1
+version: 1.0.18+1
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -10,7 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   shared_preferences: ^2.1.2
-  flutter_singbox_client: ^1.0.1
+  flutter_singbox_client: 1.0.0
 
 dev_dependencies:
   flutter_test:
