@@ -712,7 +712,6 @@ class _ConfigManagementPageState extends State<ConfigManagementPage> {
                 jsonConfig = _convertVlessToJson(link);
                 name = 'VLESS - ${link.substring(8).split('@')[1].split('?')[0]}';
               } else if (link.startsWith('vmess://')) {
-                // vmess را بعداً اضافه می‌کنیم
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('پشتیبانی از vmess به زودی اضافه می‌شود')),
                 );
@@ -734,7 +733,7 @@ class _ConfigManagementPageState extends State<ConfigManagementPage> {
               setState(() {
                 _configs.add({
                   'name': name,
-                  'address': jsonConfig,
+                  'address': jsonConfig!,
                   'status': 'غیرفعال',
                 });
               });
