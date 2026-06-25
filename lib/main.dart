@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
   bool _isConnected = false;
   bool _isInitializing = true;
 
-  static const String _tunConfig = '''
+  static const String _freedomConfig = '''
 {
   "log": { "loglevel": "info" },
   "inbounds": [
@@ -50,42 +50,14 @@ class _HomePageState extends State<HomePage> {
   ],
   "outbounds": [
     {
-      "protocol": "vless",
-      "tag": "proxy",
-      "settings": {
-        "vnext": [
-          {
-            "address": "104.20.47.114",
-            "port": 2083,
-            "users": [
-              {
-                "id": "528b1e29-c2a8-474a-82d7-b3300591536e",
-                "encryption": "none"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "ws",
-        "security": "tls",
-        "tlsSettings": {
-          "serverName": "delicate-mud-ce14.sobhantk.workers.dev",
-          "fingerprint": "chrome"
-        },
-        "wsSettings": {
-          "path": "/",
-          "headers": {
-            "Host": "delicate-mud-ce14.sobhantk.workers.dev"
-          }
-        }
-      }
+      "protocol": "freedom",
+      "tag": "direct"
     }
   ],
   "route": {
     "rules": [
       {
-        "outbound": "proxy",
+        "outbound": "direct",
         "network": ["tcp", "udp"]
       }
     ]
@@ -125,7 +97,7 @@ class _HomePageState extends State<HomePage> {
     } else {
       await _v2ray.startV2Ray(
         remark: 'V2RAY stk',
-        config: _tunConfig,
+        config: _freedomConfig,
       );
       setState(() => _isConnected = true);
     }
