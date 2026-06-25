@@ -1,21 +1,20 @@
-import 'package:flutter_v2ray/flutter_v2ray.dart';
+import 'package:flutter_v2ray_client/v2ray_client.dart';
 
 class VpnService {
   static final VpnService _instance = VpnService._internal();
   factory VpnService() => _instance;
   VpnService._internal();
 
-  final V2Ray _v2ray = V2Ray();
+  final V2RayClient _client = V2RayClient.instance;
   bool _isConnected = false;
 
   bool get isConnected => _isConnected;
 
   Future<void> startVpn(String config) async {
     try {
-      await _v2ray.startV2Ray(
-        remark: 'V2RAY stk',
+      await _client.start(
         config: config,
-        useSystemProxy: false,
+        remark: 'V2RAY stk',
       );
       _isConnected = true;
       print('✅ V2Ray متصل شد');
@@ -28,7 +27,7 @@ class VpnService {
 
   Future<void> stopVpn() async {
     try {
-      await _v2ray.stopV2Ray();
+      await _client.stop();
       _isConnected = false;
       print('❌ V2Ray قطع شد');
     } catch (e) {
@@ -45,11 +44,11 @@ class VpnService {
     }
   }
 
-  Future<String?> getStatus() async {
+  Future<bool> isRunning() async {
     try {
-      return await _v2ray.getStatus();
+      return await _client.isRunning();
     } catch (e) {
-      return null;
+      return false;
     }
   }
 }
