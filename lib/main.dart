@@ -41,12 +41,19 @@ class _HomePageState extends State<HomePage> {
     {
       "type": "tun",
       "tag": "tun-in",
-      "address": ["172.19.0.1/30"],
+      "address": ["172.19.0.1/30", "fdfe:dcba:9876:ffff::/64"],
       "mtu": 9000,
       "auto_route": true,
       "strict_route": true,
       "sniff": true,
-      "sniff_override_destination": true
+      "sniff_override_destination": true,
+      "platform": {
+        "http_proxy": {
+          "enabled": true,
+          "server": "127.0.0.1",
+          "port": 10808
+        }
+      }
     }
   ],
   "outbounds": [
@@ -123,7 +130,11 @@ class _HomePageState extends State<HomePage> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('V2RAY stk')),
+      appBar: AppBar(
+        title: const Text('V2RAY stk'),
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
