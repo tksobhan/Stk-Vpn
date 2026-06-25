@@ -189,7 +189,10 @@ class _SettingsPageState extends State<SettingsPage> {
                       leading: const Icon(Icons.vpn_key),
                       title: const Text('مدیریت کانفیگ‌ها'),
                       subtitle: const Text('افزودن، ویرایش و حذف کانفیگ‌ها'),
-                      onTap: () {},
+                      onTap: () {
+                        // فقط ادمین می‌تواند وارد شود
+                        // اینجا از طریق پنل ادمین انجام می‌شود
+                      },
                     ),
                   ),
                   Card(
@@ -375,7 +378,6 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
   }
 
   Future<void> _loadPassword() async {
-    // فقط برای اطمینان از اینکه PreferencesService کار می‌کند
     setState(() => _isLoading = false);
   }
 
@@ -441,7 +443,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
   }
 }
 
-// ========== صفحه مدیریت ادمین ==========
+// ========== صفحه مدیریت ادمین (با دکمه مدیریت کانفیگ) ==========
 class AdminPage extends StatelessWidget {
   final VoidCallback onLogout;
 
@@ -504,6 +506,23 @@ class AdminPage extends StatelessWidget {
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 40),
+            // دکمه مدیریت کانفیگ‌ها (فقط ادمین)
+            FilledButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ConfigManagementPage(),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.vpn_key),
+              label: const Text('مدیریت کانفیگ‌ها'),
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+              ),
+            ),
+            const SizedBox(height: 16),
             FilledButton.icon(
               onPressed: () => _showQrPlaceholder(context),
               icon: const Icon(Icons.qr_code_scanner),
@@ -515,6 +534,141 @@ class AdminPage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+// ========== صفحه مدیریت کانفیگ‌ها (فقط ادمین) ==========
+class ConfigManagementPage extends StatefulWidget {
+  const ConfigManagementPage({super.key});
+
+  @override
+  State<ConfigManagementPage> createState() => _ConfigManagementPageState();
+}
+
+class _ConfigManagementPageState extends State<ConfigManagementPage> {
+  // داده‌های نمونه برای نمایش (فعلاً در حافظه)
+  List<Map<String, String>> _configs = [
+    {'name': 'سرور ایران', 'address': 'ir.example.com', 'status': 'فعال'},
+    {'name': 'سرور آلمان', 'address': 'de.example.com', 'status': 'غیرفعال'},
+    {'name': 'سرور آمریکا', 'address': 'us.example.com', 'status': 'فعال'},
+  ];
+
+  void _addConfig() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        final nameController = TextEditingController();
+        final addressController = TextEditingController();
+        return AlertDialog(
+          title: const Text('افزودن کانفیگ جدید'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(labelText: 'نام'),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: addressController,
+                decoration: const InputDecoration(labelText: 'آدرس'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('انصراف'),
+            ),
+            FilledButton(
+              onPressed: () {
+                if (nameController.text.isNotEmpty && addressController.text.isNotEmpty) {
+                  setState(() {
+                    _configs.add({
+                      'name': nameController.text,
+                      'address': addressController.text,
+                      'status': 'غیرفعال',
+                    });
+                  });
+                  Navigator.pop(context);
+                }
+              },
+              child: const Text('افزودن'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _deleteConfig(int index) {
+    setState(() {
+      _configs.removeAt(index);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('مدیریت کانفیگ‌ها'),
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.onPrimary,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: _addConfig,
+            tooltip: 'افزودن کانفیگ',
+          ),
+        ],
+      ),
+      body: _configs.isEmpty
+          ? const Center(
+              child: Text('هیچ کانفیگی وجود ندارد'),
+            )
+          : ListView.builder(
+              itemCount: _configs.length,
+              itemBuilder: (context, index) {
+                final config = _configs[index];
+                return Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  child: ListTile(
+                    leading: const Icon(Icons.vpn_key),
+                    title: Text(config['name'] ?? 'بدون نام'),
+                    subtitle: Text(config['address'] ?? 'بدون آدرس'),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: config['status'] == 'فعال'
+                                ? Colors.green
+                                : Colors.grey,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            config['status'] ?? 'نامشخص',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          onPressed: () => _deleteConfig(index),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
     );
   }
 }
