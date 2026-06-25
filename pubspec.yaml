@@ -10,7 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   shared_preferences: ^2.1.2
-  v2ray_flutter: ^1.0.0
+  flutter_v2ray: ^1.0.10
 
 dev_dependencies:
   flutter_test:
