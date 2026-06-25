@@ -1,7 +1,7 @@
 name: v2ray_stk
 description: V2RAY stk - VPN Client
 publish_to: 'none'
-version: 1.0.21+1
+version: 1.0.24+1
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -10,7 +10,10 @@ dependencies:
   flutter:
     sdk: flutter
   shared_preferences: ^2.1.2
-  flutter_v2ray: ^1.0.10
+  flutter_v2ray:
+    git:
+      url: https://github.com/blueboytm/flutter_v2ray.git
+      ref: master
 
 dev_dependencies:
   flutter_test:
