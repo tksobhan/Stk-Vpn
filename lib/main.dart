@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:v2ray_stk/services/preferences_service.dart';
 import 'package:v2ray_stk/services/vpn_service.dart';
+import 'dart:convert';
+import 'dart:core';
 
 void main() => runApp(const MyApp());
 
@@ -69,7 +71,6 @@ class _HomePageState extends State<HomePage> {
   final VpnService _vpnService = VpnService();
   bool _isLoading = false;
 
-  // کانفیگ نمونه (بعداً از صفحه مدیریت کانفیگ‌ها گرفته می‌شود)
   static const String _sampleConfig = '''
 {
   "log": {
@@ -587,6 +588,169 @@ class _ConfigManagementPageState extends State<ConfigManagementPage> {
     {'name': 'سرور آمریکا', 'address': 'us.example.com', 'status': 'فعال'},
   ];
 
+  // تبدیل لینک vless:// به JSON
+  String? _convertVlessToJson(String link) {
+    if (!link.startsWith('vless://')) return null;
+
+    try {
+      final raw = link.substring(8);
+      final atIndex = raw.indexOf('@');
+      if (atIndex == -1) return null;
+
+      final userPart = raw.substring(0, atIndex);
+      final rest = raw.substring(atIndex + 1);
+      final hostPort = rest.split('?')[0];
+      final query = rest.contains('?') ? rest.split('?')[1] : '';
+
+      final hostParts = hostPort.split(':');
+      final address = hostParts[0];
+      final port = int.tryParse(hostParts[1]) ?? 443;
+
+      Map<String, String> params = {};
+      if (query.isNotEmpty) {
+        query.split('&').forEach((pair) {
+          final parts = pair.split('=');
+          if (parts.length == 2) {
+            params[parts[0]] = Uri.decodeComponent(parts[1]);
+          }
+        });
+      }
+
+      final path = params['path'] ?? '/';
+      final security = params['security'] ?? 'tls';
+      final encryption = params['encryption'] ?? 'none';
+      final host = params['host'] ?? address;
+      final sni = params['sni'] ?? host;
+      final fp = params['fp'] ?? 'chrome';
+      final type = params['type'] ?? 'ws';
+
+      final jsonConfig = {
+        "log": {"loglevel": "none"},
+        "inbounds": [
+          {
+            "listen": "127.0.0.1",
+            "port": 10808,
+            "protocol": "socks",
+            "settings": {"auth": "noauth", "udp": true}
+          }
+        ],
+        "outbounds": [
+          {
+            "protocol": "vless",
+            "settings": {
+              "vnext": [
+                {
+                  "address": address,
+                  "port": port,
+                  "users": [
+                    {"id": userPart, "encryption": encryption}
+                  ]
+                }
+              ]
+            },
+            "streamSettings": {
+              "network": type,
+              "security": security,
+              "tlsSettings": {"serverName": sni, "fingerprint": fp},
+              "wsSettings": {
+                "path": path,
+                "headers": {"Host": host}
+              }
+            }
+          }
+        ]
+      };
+
+      return const JsonEncoder.withIndent('  ').convert(jsonConfig);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  void _addConfigViaLink() {
+    final linkController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('وارد کردن لینک اشتراک'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('لینک vless:// یا vmess:// خود را وارد کنید:'),
+            const SizedBox(height: 12),
+            TextField(
+              controller: linkController,
+              decoration: const InputDecoration(
+                labelText: 'لینک',
+                border: OutlineInputBorder(),
+                hintText: 'vless://...',
+              ),
+              maxLines: 3,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('انصراف'),
+          ),
+          FilledButton(
+            onPressed: () {
+              final link = linkController.text.trim();
+              if (link.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('لطفاً لینک را وارد کنید')),
+                );
+                return;
+              }
+
+              String? jsonConfig;
+              String name = '';
+
+              if (link.startsWith('vless://')) {
+                jsonConfig = _convertVlessToJson(link);
+                name = 'VLESS - ${link.substring(8).split('@')[1].split('?')[0]}';
+              } else if (link.startsWith('vmess://')) {
+                // vmess را بعداً اضافه می‌کنیم
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('پشتیبانی از vmess به زودی اضافه می‌شود')),
+                );
+                return;
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('فرمت لینک پشتیبانی نمی‌شود')),
+                );
+                return;
+              }
+
+              if (jsonConfig == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('خطا در تبدیل لینک')),
+                );
+                return;
+              }
+
+              setState(() {
+                _configs.add({
+                  'name': name,
+                  'address': jsonConfig,
+                  'status': 'غیرفعال',
+                });
+              });
+
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('✅ کانفیگ با موفقیت اضافه شد')),
+              );
+            },
+            child: const Text('تبدیل و افزودن'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _addConfig() {
     showDialog(
       context: context,
@@ -605,7 +769,8 @@ class _ConfigManagementPageState extends State<ConfigManagementPage> {
               const SizedBox(height: 12),
               TextField(
                 controller: addressController,
-                decoration: const InputDecoration(labelText: 'آدرس'),
+                decoration: const InputDecoration(labelText: 'آدرس (JSON)'),
+                maxLines: 5,
               ),
             ],
           ),
@@ -652,9 +817,14 @@ class _ConfigManagementPageState extends State<ConfigManagementPage> {
         foregroundColor: colorScheme.onPrimary,
         actions: [
           IconButton(
+            icon: const Icon(Icons.link),
+            onPressed: _addConfigViaLink,
+            tooltip: 'وارد کردن لینک',
+          ),
+          IconButton(
             icon: const Icon(Icons.add),
             onPressed: _addConfig,
-            tooltip: 'افزودن کانفیگ',
+            tooltip: 'افزودن کانفیگ دستی',
           ),
         ],
       ),
@@ -666,12 +836,19 @@ class _ConfigManagementPageState extends State<ConfigManagementPage> {
               itemCount: _configs.length,
               itemBuilder: (context, index) {
                 final config = _configs[index];
+                final isJson = config['address']?.startsWith('{') ?? false;
                 return Card(
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   child: ListTile(
                     leading: const Icon(Icons.vpn_key),
                     title: Text(config['name'] ?? 'بدون نام'),
-                    subtitle: Text(config['address'] ?? 'بدون آدرس'),
+                    subtitle: Text(
+                      isJson
+                          ? 'JSON (${config['address']?.length ?? 0} کاراکتر)'
+                          : (config['address'] ?? 'بدون آدرس'),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
