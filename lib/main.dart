@@ -70,6 +70,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final VpnService _vpnService = VpnService();
   bool _isLoading = false;
+  bool _isInitializing = true;
 
   static const String _sampleConfig = '''
 {
@@ -96,8 +97,28 @@ class _HomePageState extends State<HomePage> {
 }
 ''';
 
+  @override
+  void initState() {
+    super.initState();
+    _initializeVpn();
+  }
+
+  Future<void> _initializeVpn() async {
+    try {
+      await _vpnService.initialize();
+    } catch (e) {
+      print('خطا در مقداردهی اولیه VPN: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isInitializing = false;
+        });
+      }
+    }
+  }
+
   Future<void> _toggleConnection() async {
-    if (_isLoading) return;
+    if (_isLoading || _isInitializing) return;
     setState(() => _isLoading = true);
     try {
       await _vpnService.toggleVpn(_sampleConfig);
@@ -111,9 +132,26 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void dispose() {
+    _vpnService.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final isConnected = _vpnService.isConnected;
+
+    if (_isInitializing) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('V2RAY stk'),
+          backgroundColor: colorScheme.primary,
+          foregroundColor: colorScheme.onPrimary,
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -142,7 +180,7 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 40),
             FilledButton.icon(
-              onPressed: _isLoading ? null : _toggleConnection,
+              onPressed: (_isLoading || _isInitializing) ? null : _toggleConnection,
               icon: Icon(isConnected ? Icons.stop : Icons.play_arrow),
               label: Text(
                 isConnected ? 'قطع اتصال' : 'اتصال',
@@ -588,7 +626,6 @@ class _ConfigManagementPageState extends State<ConfigManagementPage> {
     {'name': 'سرور آمریکا', 'address': 'us.example.com', 'status': 'فعال'},
   ];
 
-  // تبدیل لینک vless:// به JSON
   String? _convertVlessToJson(String link) {
     if (!link.startsWith('vless://')) return null;
 

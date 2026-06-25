@@ -3,6 +3,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:label="V2RAY stk"
@@ -29,7 +30,7 @@
             android:value="2" />
 
         <service
-            android:name="com.github.blueboytm.flutter_v2ray.V2rayService"
+            android:name="com.amirzr.v2ray.V2rayVpnService"
             android:permission="android.permission.BIND_VPN_SERVICE"
             android:exported="false"
             android:foregroundServiceType="dataSync">
