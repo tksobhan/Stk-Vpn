@@ -1,19 +1,12 @@
 package com.tksobhan.v2ray_stk
 
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
+import android.app.*
 import android.content.Intent
-import android.net.TrafficStats
 import android.net.VpnService
-import android.os.Build
-import android.os.Handler
-import android.os.Looper
-import android.os.ParcelFileDescriptor
+import android.os.*
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import java.io.File
-import java.lang.Process
 
 class CoreService : VpnService() {
 
@@ -22,65 +15,59 @@ class CoreService : VpnService() {
         private const val NOTIFICATION_ID = 1001
     }
 
-    private var currentProcess: Process? = null
-    private var vpnInterface: ParcelFileDescriptor? = null
-    private val watchdog = Handler(Looper.getMainLooper())
+    private var process: Process? = null
+    private var vpn: ParcelFileDescriptor? = null
+    private val handler = Handler(Looper.getMainLooper())
 
-    override fun onStartCommand(
-        intent: Intent?,
-        flags: Int,
-        startId: Int
-    ): Int {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
         val type = intent?.getStringExtra("type") ?: "singbox"
         val config = intent?.getStringExtra("config") ?: ""
 
-        startVpnForeground()
+        startForegroundService()
 
         if (config.isBlank()) {
-            Log.e("VPN", "config empty")
-            return START_STICKY
+            Log.e("CORE", "empty config")
+            return START_NOT_STICKY
         }
 
-        // ✅ FIX 1: ذخیره کانفیگ در فایل و ارسال مسیر
-        val configFile = File(filesDir, "config.json")
-        configFile.writeText(config)
+        val file = File(filesDir, "config.json")
+        file.writeText(config)
 
-        when (type.lowercase()) {
-            "singbox" -> startSingBox(configFile.absolutePath)
-            "xray" -> startXray(configFile.absolutePath)
+        vpn = establishVpn()
+
+        when (type) {
+            "singbox" -> startSingBox(file.absolutePath)
+            "xray" -> startXray(file.absolutePath)
         }
-
-        startWatchdog()
 
         return START_STICKY
     }
 
-    private fun startVpnForeground() {
+    private fun startForegroundService() {
+        val manager = getSystemService(NotificationManager::class.java)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "VPN PRO",
+                "VPN Service",
                 NotificationManager.IMPORTANCE_LOW
             )
-            getSystemService(NotificationManager::class.java)
-                .createNotificationChannel(channel)
+            manager.createNotificationChannel(channel)
         }
 
-        val notification: Notification =
-            NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("VPN Running")
-                .setContentText("Connected")
-                .setSmallIcon(android.R.drawable.stat_sys_download_done)
-                .build()
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle("VPN Running")
+            .setContentText("Connected")
+            .setSmallIcon(android.R.drawable.stat_sys_download_done)
+            .build()
 
         startForeground(NOTIFICATION_ID, notification)
     }
 
-    private fun startVpn(): ParcelFileDescriptor? {
+    private fun establishVpn(): ParcelFileDescriptor? {
         return Builder()
-            .setSession("STK-VPN")
+            .setSession("Clash-Grade-VPN")
             .addAddress("172.19.0.1", 30)
             .addRoute("0.0.0.0", 0)
             .addDnsServer("1.1.1.1")
@@ -88,157 +75,64 @@ class CoreService : VpnService() {
             .establish()
     }
 
-    private fun resetVpn() {
-        vpnInterface?.close()
-        vpnInterface = null
-        try {
-            Thread.sleep(300)
-        } catch (_: InterruptedException) {}
-        vpnInterface = startVpn()
-        Log.d("VPN", "TUN reset done (fd: ${vpnInterface?.fd})")
-    }
-
-    // ✅ FIX 1: ارسال مسیر فایل به sing-box
-    private fun startSingBox(configPath: String) {
-
-        stopCore()
-        resetVpn()
-
-        val binary = File(filesDir, "sing-box")
-
-        if (!binary.exists()) {
-            Log.e("VPN", "sing-box missing")
-            return
-        }
-
-        if (!binary.canExecute()) {
-            binary.setExecutable(true)
-        }
-
-        currentProcess = Runtime.getRuntime().exec(
-            arrayOf(
-                binary.absolutePath,
-                "run",
-                "-c",
-                configPath
-            )
-        )
-
-        readProcessOutput()
-        Log.d("VPN", "sing-box started with config file: $configPath")
-    }
-
-    // ✅ FIX 1: ارسال مسیر فایل به xray
-    private fun startXray(configPath: String) {
-
+    private fun startSingBox(path: String) {
         stopCore()
 
-        val binary = File(filesDir, "xray")
+        val bin = File(filesDir, "sing-box")
+        if (!bin.exists()) return
 
-        if (!binary.exists()) {
-            Log.e("VPN", "xray missing")
-            return
-        }
-
-        if (!binary.canExecute()) {
-            binary.setExecutable(true)
-        }
-
-        currentProcess = Runtime.getRuntime().exec(
-            arrayOf(
-                binary.absolutePath,
-                "-config",
-                configPath
-            )
+        process = Runtime.getRuntime().exec(
+            arrayOf(bin.absolutePath, "run", "-c", path)
         )
 
-        readProcessOutput()
-        Log.d("VPN", "xray started with config file: $configPath")
+        readLogs()
     }
 
-    private fun readProcessOutput() {
-        val proc = currentProcess ?: return
+    private fun startXray(path: String) {
+        stopCore()
+
+        val bin = File(filesDir, "xray")
+        if (!bin.exists()) return
+
+        process = Runtime.getRuntime().exec(
+            arrayOf(bin.absolutePath, "-config", path)
+        )
+
+        readLogs()
+    }
+
+    private fun readLogs() {
+        val p = process ?: return
 
         Thread {
             try {
-                proc.inputStream.bufferedReader().forEachLine { line ->
-                    Log.d("CORE_OUT", line)
-                    MainActivity.logSink?.success(line)
+                p.inputStream.bufferedReader().forEachLine {
+                    Log.d("CORE", it)
+                    MainActivity.logSink?.success(it)
                 }
-            } catch (e: Exception) {
-                Log.e("CORE", "inputStream error", e)
-            }
+            } catch (_: Exception) {}
         }.start()
 
         Thread {
             try {
-                proc.errorStream.bufferedReader().forEachLine { line ->
-                    Log.e("CORE_ERR", line)
-                    MainActivity.logSink?.success("[ERR] $line")
+                p.errorStream.bufferedReader().forEachLine {
+                    Log.e("CORE", it)
                 }
-            } catch (e: Exception) {
-                Log.e("CORE", "errorStream error", e)
-            }
+            } catch (_: Exception) {}
         }.start()
-    }
-
-    private fun startWatchdog() {
-
-        watchdog.postDelayed(
-            object : Runnable {
-
-                override fun run() {
-
-                    try {
-
-                        if (currentProcess == null) {
-                            Log.e("VPN", "core crashed")
-                        }
-
-                    } finally {
-
-                        watchdog.postDelayed(
-                            this,
-                            5000
-                        )
-                    }
-                }
-            },
-            5000
-        )
     }
 
     private fun stopCore() {
-        currentProcess?.destroyForcibly()
-        currentProcess = null
-    }
-
-    // ✅ FIX 3: اعتبارسنجی باینری (برای CoreInstaller)
-    private fun isValidBinary(file: File): Boolean {
-        return file.exists() &&
-                file.length() > 2_000_000 &&
-                file.canExecute()
-    }
-
-    private fun getTrafficStats(): String {
-        val uid = android.os.Process.myUid()
-        val rx = TrafficStats.getUidRxBytes(uid)
-        val tx = TrafficStats.getUidTxBytes(uid)
-        return "$tx|$rx"
+        try {
+            process?.destroyForcibly()
+        } catch (_: Exception) {}
+        process = null
     }
 
     override fun onDestroy() {
-
         stopCore()
-        vpnInterface?.close()
-        vpnInterface = null
-
-        watchdog.removeCallbacksAndMessages(null)
-
+        vpn?.close()
+        vpn = null
         super.onDestroy()
     }
-
-    override fun onBind(
-        intent: Intent?
-    ) = null
 }

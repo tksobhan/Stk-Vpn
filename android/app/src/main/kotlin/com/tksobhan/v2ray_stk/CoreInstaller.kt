@@ -2,30 +2,27 @@ package com.tksobhan.v2ray_stk
 
 import android.content.Context
 import android.util.Log
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
+import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.zip.ZipInputStream
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
-import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream
+import java.util.zip.*
 
 class CoreInstaller(private val context: Context) {
 
     fun fetchSubscription(url: String): String {
         return try {
-            val connection = URL(url).openConnection() as HttpURLConnection
-            connection.connect()
-            connection.inputStream.bufferedReader().readText()
+            val conn = URL(url).openConnection() as HttpURLConnection
+            conn.connectTimeout = 15000
+            conn.readTimeout = 20000
+            conn.inputStream.bufferedReader().readText()
         } catch (e: Exception) {
-            Log.e("SUB", "❌ خطا در دریافت اشتراک: ${e.message}")
+            Log.e("SUB", "fetch error: ${e.message}")
             ""
         }
     }
 
     fun parseSubscription(data: String): List<String> {
-        return data.split("\n").filter {
+        return data.lines().filter {
             it.startsWith("vless://") ||
             it.startsWith("vmess://") ||
             it.startsWith("trojan://") ||
@@ -34,145 +31,65 @@ class CoreInstaller(private val context: Context) {
     }
 
     fun installIfNeeded(name: String): Boolean {
-        val binary = File(context.filesDir, name)
 
-        if (binary.exists() && binary.canExecute()) {
-            Log.d("INSTALLER", "✅ $name از قبل وجود دارد")
-            return true
-        }
-
-        Log.d("INSTALLER", "⬇️ دانلود $name ...")
+        val bin = File(context.filesDir, name)
+        if (bin.exists() && bin.canExecute()) return true
 
         val url = when (name) {
-            "sing-box" -> "https://github.com/SagerNet/sing-box/releases/download/v1.13.14/sing-box-1.13.14-android-arm64.tar.gz"
-            "xray" -> "https://github.com/XTLS/Xray-core/releases/download/v26.6.1/Xray-android-arm64-v8a.zip"
+            "sing-box" -> "https://github.com/SagerNet/sing-box/releases/latest/download/sing-box-android-arm64.tar.gz"
+            "xray" -> "https://github.com/XTLS/Xray-core/releases/latest/download/Xray-android-arm64-v8a.zip"
             else -> return false
         }
 
-        var retries = 3
-        var success = false
+        return try {
+            val archive = File(context.filesDir, "$name.zip")
+            download(url, archive)
 
-        while (retries > 0 && !success) {
-            try {
-                val archive = File(context.filesDir, "$name.archive")
-                downloadFile(url, archive)
+            if (archive.length() < 2_000_000) return false
 
-                if (archive.length() < 5_000_000) {
-                    Log.e("INSTALLER", "❌ حجم فایل دانلود شده نامعتبر است")
-                    archive.delete()
-                    retries--
-                    continue
-                }
+            extract(archive, context.filesDir)
 
-                if (name == "sing-box") {
-                    extractTarGz(archive, context.filesDir)
-                } else {
-                    extractZip(archive, context.filesDir)
-                }
+            val extracted = findBinary(name)
+            if (extracted != null) {
+                extracted.setExecutable(true)
+                extracted.renameTo(bin)
+                true
+            } else false
 
-                val extracted = findExtractedBinary(name)
+        } catch (e: Exception) {
+            Log.e("INSTALL", e.message ?: "")
+            false
+        }
+    }
 
-                // ✅ FIX 3: اعتبارسنجی باینری
-                if (extracted != null && isValidBinary(extracted)) {
+    private fun download(url: String, out: File) {
+        URL(url).openStream().use { input ->
+            FileOutputStream(out).use { output ->
+                input.copyTo(output)
+            }
+        }
+    }
 
-                    if (binary.exists()) {
-                        binary.delete()
+    private fun extract(file: File, dir: File) {
+        if (file.name.endsWith(".zip")) {
+            ZipInputStream(FileInputStream(file)).use { zip ->
+                var e = zip.nextEntry
+                while (e != null) {
+                    val f = File(dir, e.name)
+                    if (e.isDirectory) f.mkdirs()
+                    else {
+                        f.parentFile?.mkdirs()
+                        f.outputStream().use { zip.copyTo(it) }
                     }
-
-                    extracted.renameTo(binary)
-                    binary.setExecutable(true, false)
-                    archive.delete()
-
-                    Log.d("INSTALLER", "✅ $name نصب شد (ARM64)")
-                    success = true
-
-                } else {
-                    Log.e("INSTALLER", "❌ باینری نامعتبر، تلاش مجدد...")
-                    retries--
-                }
-
-            } catch (e: Exception) {
-                Log.e("INSTALLER", "❌ تلاش ${4 - retries} شکست خورد: ${e.message}")
-                retries--
-            }
-        }
-
-        return success
-    }
-
-    private fun downloadFile(url: String, output: File) {
-        val connection = URL(url).openConnection() as HttpURLConnection
-        connection.instanceFollowRedirects = true
-        connection.connectTimeout = 15000
-        connection.readTimeout = 30000
-        connection.connect()
-        connection.inputStream.use { input ->
-            FileOutputStream(output).use { out ->
-                val buffer = ByteArray(8 * 1024)
-                var bytesRead: Int
-                while (input.read(buffer).also { bytesRead = it } != -1) {
-                    out.write(buffer, 0, bytesRead)
+                    e = zip.nextEntry
                 }
             }
         }
     }
 
-    private fun extractTarGz(archive: File, outputDir: File) {
-        TarArchiveInputStream(GzipCompressorInputStream(FileInputStream(archive))).use { tar ->
-            var entry = tar.nextEntry
-            val buffer = ByteArray(8 * 1024)
-            while (entry != null) {
-                val outFile = File(outputDir, entry.name)
-                if (entry.isDirectory) {
-                    outFile.mkdirs()
-                } else {
-                    outFile.parentFile?.mkdirs()
-                    FileOutputStream(outFile).use { out ->
-                        var bytesRead: Int
-                        while (tar.read(buffer).also { bytesRead = it } != -1) {
-                            out.write(buffer, 0, bytesRead)
-                        }
-                    }
-                }
-                entry = tar.nextEntry
-            }
-        }
-        archive.delete()
-    }
-
-    private fun extractZip(archive: File, outputDir: File) {
-        ZipInputStream(FileInputStream(archive)).use { zis ->
-            var entry = zis.nextEntry
-            val buffer = ByteArray(8 * 1024)
-            while (entry != null) {
-                val outFile = File(outputDir, entry.name)
-                if (entry.isDirectory) {
-                    outFile.mkdirs()
-                } else {
-                    outFile.parentFile?.mkdirs()
-                    FileOutputStream(outFile).use { out ->
-                        var bytesRead: Int
-                        while (zis.read(buffer).also { bytesRead = it } != -1) {
-                            out.write(buffer, 0, bytesRead)
-                        }
-                    }
-                }
-                entry = zis.nextEntry
-            }
-        }
-        archive.delete()
-    }
-
-    private fun findExtractedBinary(name: String): File? {
+    private fun findBinary(name: String): File? {
         return context.filesDir.listFiles()?.firstOrNull {
-            it.isFile && it.name.contains(name) && !it.name.endsWith(".archive")
+            it.name.contains(name) && it.canExecute()
         }
-    }
-
-    // ✅ FIX 3: اعتبارسنجی باینری
-    private fun isValidBinary(file: File): Boolean {
-        return file.exists() &&
-                file.length() > 2_000_000 &&
-                file.canExecute()
     }
 }

@@ -30,11 +30,12 @@
             android:name="flutterEmbedding"
             android:value="2" />
 
+        <!-- ✅ سرویس کامل CoreService -->
         <service
             android:name=".CoreService"
             android:permission="android.permission.BIND_VPN_SERVICE"
             android:exported="true"
-            android:foregroundServiceType="dataSync">
+            android:foregroundServiceType="vpn">
             <intent-filter>
                 <action android:name="android.net.VpnService" />
             </intent-filter>
