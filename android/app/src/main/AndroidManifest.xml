@@ -30,12 +30,12 @@
             android:name="flutterEmbedding"
             android:value="2" />
 
-        <!-- ✅ سرویس VPN واقعی با foregroundServiceType="vpn" -->
+        <!-- ✅ سرویس VPN با foregroundServiceType="dataSync" (دقیقاً مطابق خواسته شما) -->
         <service
             android:name=".CoreService"
             android:permission="android.permission.BIND_VPN_SERVICE"
             android:exported="true"
-            android:foregroundServiceType="vpn">
+            android:foregroundServiceType="dataSync">
             <intent-filter>
                 <action android:name="android.net.VpnService" />
             </intent-filter>
