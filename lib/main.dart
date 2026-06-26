@@ -36,12 +36,17 @@ class _HomePageState extends State<HomePage> {
 
   static const String _tunConfig = '''
 {
-  "log": { "loglevel": "info" },
+  "log": {
+    "loglevel": "warning"
+  },
+  "dns": {
+    "servers": ["9.9.9.9"]
+  },
   "inbounds": [
     {
       "type": "tun",
       "tag": "tun-in",
-      "address": ["172.19.0.1/30", "fdfe:dcba:9876:ffff::/64"],
+      "address": ["172.19.0.1/30"],
       "mtu": 9000,
       "auto_route": true,
       "strict_route": true,
@@ -58,14 +63,65 @@ class _HomePageState extends State<HomePage> {
   ],
   "outbounds": [
     {
+      "mux": {
+        "concurrency": -1,
+        "enabled": false
+      },
+      "protocol": "vless",
+      "tag": "proxy",
+      "settings": {
+        "vnext": [
+          {
+            "address": "104.18.218.4",
+            "port": 443,
+            "users": [
+              {
+                "id": "ffa993c6-f992-b7d0-5933-ab0400000000",
+                "encryption": "none",
+                "flow": "",
+                "level": 8
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "ws",
+        "security": "tls",
+        "tlsSettings": {
+          "allowInsecure": false,
+          "fingerprint": "chrome",
+          "serverName": "sparkling-wildflower-ebec.stk48.workers.dev"
+        },
+        "wsSettings": {
+          "path": "/Myself",
+          "headers": {
+            "Host": "sparkling-wildflower-ebec.stk48.workers.dev"
+          }
+        }
+      }
+    },
+    {
       "protocol": "freedom",
-      "tag": "direct"
+      "tag": "direct",
+      "settings": {
+        "domainStrategy": "UseIP"
+      }
+    },
+    {
+      "protocol": "blackhole",
+      "tag": "block",
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      }
     }
   ],
   "route": {
     "rules": [
       {
-        "outbound": "direct",
+        "outbound": "proxy",
         "network": ["tcp", "udp"]
       }
     ]
@@ -113,7 +169,7 @@ class _HomePageState extends State<HomePage> {
         );
         setState(() {
           _isConnected = true;
-          _logMessage = '✅ وصل شد (اما ترافیک ممکن است هدایت نشود)';
+          _logMessage = '✅ وصل شد - در حال تست ترافیک...';
         });
       } catch (e) {
         setState(() => _logMessage = '❌ خطا: $e');
