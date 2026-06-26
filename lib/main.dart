@@ -1,8 +1,95 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_sing_box/flutter_sing_box.dart';
+import 'singbox_ffi.dart';
 
 void main() => runApp(const MyApp());
 
+// ============================================================
+// Engine Interface
+// ============================================================
+abstract class Engine {
+  Future<void> start(String config);
+  Future<void> stop();
+  bool get isRunning;
+  Stream<String> get logs;
+}
+
+// ============================================================
+// SingBoxEngine (با FFI)
+// ============================================================
+class SingBoxEngine implements Engine {
+  bool _isRunning = false;
+  final StreamController<String> _logController = StreamController.broadcast();
+  final SingboxFFI _ffi = SingboxFFI();
+
+  @override
+  bool get isRunning => _isRunning;
+
+  @override
+  Stream<String> get logs => _logController.stream;
+
+  @override
+  Future<void> start(String config) async {
+    _addLog('🚀 شروع sing-box...');
+    try {
+      _ffi.loadLibrary();
+      final result = await Future(() => _ffi.run(config));
+      if (result == 0) {
+        _isRunning = true;
+        _addLog('✅ sing-box با موفقیت اجرا شد');
+      } else {
+        _addLog('❌ خطا در اجرا: کد خطا $result');
+      }
+    } catch (e) {
+      _addLog('❌ خطا: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> stop() async {
+    _addLog('🛑 توقف sing-box...');
+    try {
+      await Future(() => _ffi.stop());
+      _isRunning = false;
+      _addLog('✅ sing-box متوقف شد');
+    } catch (e) {
+      _addLog('❌ خطا در توقف: $e');
+      rethrow;
+    }
+  }
+
+  void _addLog(String message) {
+    final timestamp = DateTime.now().toIso8601String();
+    final formatted = '[$timestamp] $message';
+    _logController.add(formatted);
+    print(formatted);
+  }
+
+  void dispose() {
+    _logController.close();
+  }
+}
+
+// ============================================================
+// EngineManager
+// ============================================================
+class EngineManager {
+  Engine _currentEngine;
+
+  EngineManager({required Engine engine}) : _currentEngine = engine;
+
+  Engine get current => _currentEngine;
+
+  Future<void> start(String config) async => await _currentEngine.start(config);
+  Future<void> stop() async => await _currentEngine.stop();
+  bool get isRunning => _currentEngine.isRunning;
+  Stream<String> get logs => _currentEngine.logs;
+}
+
+// ============================================================
+// UI
+// ============================================================
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -24,16 +111,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final SingBox _singbox = SingBox();
-  bool _isConnected = false;
+  late EngineManager _manager;
   bool _isInitializing = true;
+  String _logMessage = '';
+  final List<String> _logs = [];
 
   static const String _tunConfig = '''
 {
-  "log": { "level": "warning" },
-  "dns": {
-    "servers": ["9.9.9.9"]
-  },
+  "log": { "level": "info" },
   "inbounds": [
     {
       "type": "tun",
@@ -80,10 +165,6 @@ class _HomePageState extends State<HomePage> {
           }
         }
       }
-    },
-    {
-      "type": "freedom",
-      "tag": "direct"
     }
   ],
   "route": {
@@ -100,29 +181,40 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _initializeSingbox();
+    _initializeEngine();
   }
 
-  Future<void> _initializeSingbox() async {
-    try {
-      await _singbox.initialize();
-    } catch (e) {
-      print('❌ خطا در مقداردهی اولیه: $e');
-    } finally {
-      setState(() => _isInitializing = false);
-    }
+  Future<void> _initializeEngine() async {
+    final engine = SingBoxEngine();
+    _manager = EngineManager(engine: engine);
+    _manager.logs.listen((log) {
+      setState(() {
+        _logs.add(log);
+        if (_logs.length > 20) _logs.removeAt(0);
+        _logMessage = log;
+      });
+    });
+    setState(() => _isInitializing = false);
   }
 
   Future<void> _toggleConnection() async {
     if (_isInitializing) return;
 
-    if (_isConnected) {
-      await _singbox.stop();
-      setState(() => _isConnected = false);
+    if (_manager.isRunning) {
+      await _manager.stop();
+      setState(() => _logMessage = '❌ قطع شد');
     } else {
-      await _singbox.start(_tunConfig);
-      setState(() => _isConnected = true);
+      await _manager.start(_tunConfig);
+      setState(() => _logMessage = '✅ وصل شد (تست FFI)');
     }
+  }
+
+  @override
+  void dispose() {
+    if (_manager.current is SingBoxEngine) {
+      (_manager.current as SingBoxEngine).dispose();
+    }
+    super.dispose();
   }
 
   @override
@@ -144,17 +236,30 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              _isConnected ? Icons.vpn_lock : Icons.vpn_key,
+              _manager.isRunning ? Icons.vpn_lock : Icons.vpn_key,
               size: 80,
-              color: _isConnected ? Colors.green : Colors.grey,
+              color: _manager.isRunning ? Colors.green : Colors.grey,
             ),
             const SizedBox(height: 20),
             Text(
-              _isConnected ? '✅ وصل شده' : '❌ قطع است',
+              _manager.isRunning ? '✅ وصل شده' : '❌ قطع است',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: _isConnected ? Colors.green : Colors.red,
+                color: _manager.isRunning ? Colors.green : Colors.red,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                _logs.isEmpty ? 'منتظر شروع...' : _logs.last,
+                style: const TextStyle(fontSize: 12, color: Colors.black87),
+                textAlign: TextAlign.center,
               ),
             ),
             const SizedBox(height: 40),
@@ -164,7 +269,7 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
               ),
               child: Text(
-                _isConnected ? 'قطع اتصال' : 'اتصال',
+                _manager.isRunning ? 'قطع اتصال' : 'اتصال',
                 style: const TextStyle(fontSize: 18),
               ),
             ),
