@@ -51,7 +51,7 @@ class CoreService : Service() {
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("V2RAY stk")
             .setContentText("هسته VPN در حال اجرا است...")
-            .setSmallIcon(android.R.drawable.stat_sys_vpn_ic)
+            .setSmallIcon(android.R.drawable.ic_dialog_info)  // ✅ اصلاح شده
             .build()
 
         startForeground(NOTIFICATION_ID, notification)
