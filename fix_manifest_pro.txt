@@ -1,0 +1,26 @@
+FIX PRO - AndroidManifest.xml
+
+ERROR:
+foregroundServiceType="vpn" is invalid
+
+SOLUTION (choose ONE):
+
+❌ WRONG:
+android:foregroundServiceType="vpn"
+
+✅ FIX OPTION 1 (RECOMMENDED):
+android:foregroundServiceType="dataSync"
+
+------------------------------------
+
+OR REMOVE COMPLETELY:
+
+<!-- remove foregroundServiceType attribute entirely -->
+
+------------------------------------
+
+PRO RULE:
+VPN Service in Android does NOT have "vpn" type.
+Use:
+- dataSync (best for VPN apps)
+- or specialUse (if needed)
