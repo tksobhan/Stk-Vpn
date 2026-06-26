@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:v2ray_stk/core/controller.dart';
 import 'package:v2ray_stk/services/config_service.dart';
 import 'dart:convert';
+import 'dart:async';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -14,47 +15,41 @@ class _DashboardScreenState extends State<DashboardScreen> {
   String status = 'IDLE';
   String coreType = 'singbox';
   String? activeConfig;
-  bool _isLoading = false;
 
   List<Map<String, String>> configs = [];
+
+  bool _isLoading = false;
+  String _logs = '';
+  String _traffic = '0 KB/s / 0 KB/s';
+
+  StreamSubscription? _logSub;
+  StreamSubscription? _trafficSub;
 
   final TextEditingController _linkController = TextEditingController();
   final TextEditingController _subController = TextEditingController();
 
-  String _logs = '';
-  String _traffic = '0 KB/s / 0 KB/s';
-
   @override
   void initState() {
     super.initState();
-    _loadConfigs();
-    _listenToLogs();
-    _listenToTraffic();
+    _load();
+    _listen();
   }
 
-  Future<void> _loadConfigs() async {
-    final loaded = await ConfigService.loadConfigs();
-    final active = await ConfigService.loadActiveConfig();
-
-    if (!mounted) return;
-
-    setState(() {
-      configs = loaded;
-      activeConfig = active;
-    });
+  void _load() async {
+    configs = await ConfigService.loadConfigs();
+    activeConfig = await ConfigService.loadActiveConfig();
+    if (mounted) setState(() {});
   }
 
-  void _listenToLogs() {
-    CoreController.getLogs().listen((log) {
+  void _listen() {
+    _logSub = CoreController.getLogs().listen((log) {
       if (!mounted) return;
       setState(() => _logs = log);
     });
-  }
 
-  void _listenToTraffic() {
-    CoreController.getTraffic().listen((data) {
+    _trafficSub = CoreController.getTraffic().listen((t) {
       if (!mounted) return;
-      setState(() => _traffic = data);
+      setState(() => _traffic = t);
     });
   }
 
@@ -80,42 +75,37 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _disconnect() async {
-    if (_isLoading) return;
+    await CoreController.stopCore();
+    if (mounted) setState(() => status = "DISCONNECTED");
+  }
 
-    setState(() => _isLoading = true);
-
-    try {
-      await CoreController.stopCore();
-
-      if (!mounted) return;
-
-      setState(() => status = "DISCONNECTED");
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
+  @override
+  void dispose() {
+    _logSub?.cancel();
+    _trafficSub?.cancel();
+    _linkController.dispose();
+    _subController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('V2RAY STK'),
-      ),
+      appBar: AppBar(title: const Text("STK VPN PRO")),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text("Status: $status"),
+            Text("Traffic: $_traffic"),
             const SizedBox(height: 20),
-
             ElevatedButton(
               onPressed: _isLoading ? null : _connect,
-              child: const Text("Connect"),
+              child: const Text("CONNECT"),
             ),
-
             ElevatedButton(
-              onPressed: _isLoading ? null : _disconnect,
-              child: const Text("Disconnect"),
+              onPressed: _disconnect,
+              child: const Text("DISCONNECT"),
             ),
           ],
         ),
