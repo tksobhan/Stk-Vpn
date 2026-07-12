@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:hiddify/core/localization/translations.dart';
-import 'package:hiddify/core/model/constants.dart';
-import 'package:hiddify/features/chain/model/chain_enum.dart';
-import 'package:hiddify/features/chain/overview/chain_mode_button.dart';
-import 'package:hiddify/features/settings/data/config_option_repository.dart';
+import 'package:v2raystk/core/localization/translations.dart';
+import 'package:v2raystk/core/model/constants.dart';
+import 'package:v2raystk/features/chain/model/chain_enum.dart';
+import 'package:v2raystk/features/chain/overview/chain_mode_button.dart';
+import 'package:v2raystk/features/settings/data/config_option_repository.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ChainTimelineHeader extends HookConsumerWidget {

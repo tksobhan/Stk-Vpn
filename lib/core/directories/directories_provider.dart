@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
-import 'package:hiddify/core/model/directories.dart';
-import 'package:hiddify/core/model/environment.dart';
-import 'package:hiddify/utils/custom_loggers.dart';
-import 'package:hiddify/utils/platform_utils.dart';
+import 'package:v2raystk/core/model/directories.dart';
+import 'package:v2raystk/core/model/environment.dart';
+import 'package:v2raystk/utils/custom_loggers.dart';
+import 'package:v2raystk/utils/platform_utils.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -14,7 +14,7 @@ part 'directories_provider.g.dart';
 
 @Riverpod(keepAlive: true)
 class AppDirectories extends _$AppDirectories with InfraLogger {
-  final _methodChannel = const MethodChannel("com.hiddify.app/platform");
+  final _methodChannel = const MethodChannel("com.v2raystk.app/platform");
 
   @override
   Future<Directories> build() async {
@@ -82,7 +82,7 @@ class AppDirectories extends _$AppDirectories with InfraLogger {
 
   static Directory getPortableDirectory() {
     final exeDir = File(Platform.resolvedExecutable).parent;
-    return Directory(p.join(exeDir.path, 'hiddify_portable_data'));
+    return Directory(p.join(exeDir.path, 'v2raystk_portable_data'));
   }
 
   static Future<bool> checkDirectoryAccess(Directory dir) async {

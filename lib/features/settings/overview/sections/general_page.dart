@@ -1,15 +1,15 @@
 import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
-import 'package:hiddify/core/haptic/haptic_service.dart';
-import 'package:hiddify/core/localization/translations.dart';
-import 'package:hiddify/core/preferences/general_preferences.dart';
-import 'package:hiddify/core/router/dialog/dialog_notifier.dart';
-import 'package:hiddify/features/auto_start/notifier/auto_start_notifier.dart';
-import 'package:hiddify/features/common/general_pref_tiles.dart';
-import 'package:hiddify/features/log/model/log_level.dart';
-import 'package:hiddify/features/settings/data/config_option_repository.dart';
-import 'package:hiddify/features/settings/widget/preference_tile.dart';
-import 'package:hiddify/utils/utils.dart';
+import 'package:v2raystk/core/haptic/haptic_service.dart';
+import 'package:v2raystk/core/localization/translations.dart';
+import 'package:v2raystk/core/preferences/general_preferences.dart';
+import 'package:v2raystk/core/router/dialog/dialog_notifier.dart';
+import 'package:v2raystk/features/auto_start/notifier/auto_start_notifier.dart';
+import 'package:v2raystk/features/common/general_pref_tiles.dart';
+import 'package:v2raystk/features/log/model/log_level.dart';
+import 'package:v2raystk/features/settings/data/config_option_repository.dart';
+import 'package:v2raystk/features/settings/widget/preference_tile.dart';
+import 'package:v2raystk/utils/utils.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:humanizer/humanizer.dart';
 

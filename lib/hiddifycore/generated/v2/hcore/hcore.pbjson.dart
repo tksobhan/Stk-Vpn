@@ -546,22 +546,22 @@ final $typed_data.Uint8List parseResponseDescriptor = $convert.base64Decode(
     'NlQ29kZVIMcmVzcG9uc2VDb2RlEhgKB2NvbnRlbnQYAiABKAlSB2NvbnRlbnQSGAoHbWVzc2Fn'
     'ZRgDIAEoCVIHbWVzc2FnZQ==');
 
-@$core.Deprecated('Use changeHiddifySettingsRequestDescriptor instead')
-const ChangeHiddifySettingsRequest$json = {
-  '1': 'ChangeHiddifySettingsRequest',
+@$core.Deprecated('Use changeV2ray StkSettingsRequestDescriptor instead')
+const ChangeV2ray StkSettingsRequest$json = {
+  '1': 'ChangeV2ray StkSettingsRequest',
   '2': [
     {
-      '1': 'hiddify_settings_json',
+      '1': 'v2raystk_settings_json',
       '3': 1,
       '4': 1,
       '5': 9,
-      '10': 'hiddifySettingsJson'
+      '10': 'v2raystkSettingsJson'
     },
   ],
 };
 
-/// Descriptor for `ChangeHiddifySettingsRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List changeHiddifySettingsRequestDescriptor =
+/// Descriptor for `ChangeV2ray StkSettingsRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List changeV2ray StkSettingsRequestDescriptor =
     $convert.base64Decode(
         'ChxDaGFuZ2VIaWRkaWZ5U2V0dGluZ3NSZXF1ZXN0EjIKFWhpZGRpZnlfc2V0dGluZ3NfanNvbh'
         'gBIAEoCVITaGlkZGlmeVNldHRpbmdzSnNvbg==');

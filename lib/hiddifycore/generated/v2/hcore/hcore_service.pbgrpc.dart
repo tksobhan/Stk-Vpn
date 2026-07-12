@@ -97,11 +97,11 @@ class CoreClient extends $grpc.Client {
     return $createUnaryCall(_$parse, request, options: options);
   }
 
-  $grpc.ResponseFuture<$0.CoreInfoResponse> changeHiddifySettings(
-    $0.ChangeHiddifySettingsRequest request, {
+  $grpc.ResponseFuture<$0.CoreInfoResponse> changeV2ray StkSettings(
+    $0.ChangeV2ray StkSettingsRequest request, {
     $grpc.CallOptions? options,
   }) {
-    return $createUnaryCall(_$changeHiddifySettings, request, options: options);
+    return $createUnaryCall(_$changeV2ray StkSettings, request, options: options);
   }
 
   /// rpc GenerateConfig (GenerateConfigRequest) returns (GenerateConfigResponse);
@@ -230,10 +230,10 @@ class CoreClient extends $grpc.Client {
       '/hcore.Core/Parse',
       ($0.ParseRequest value) => value.writeToBuffer(),
       $0.ParseResponse.fromBuffer);
-  static final _$changeHiddifySettings =
-      $grpc.ClientMethod<$0.ChangeHiddifySettingsRequest, $0.CoreInfoResponse>(
-          '/hcore.Core/ChangeHiddifySettings',
-          ($0.ChangeHiddifySettingsRequest value) => value.writeToBuffer(),
+  static final _$changeV2ray StkSettings =
+      $grpc.ClientMethod<$0.ChangeV2ray StkSettingsRequest, $0.CoreInfoResponse>(
+          '/hcore.Core/ChangeV2ray StkSettings',
+          ($0.ChangeV2ray StkSettingsRequest value) => value.writeToBuffer(),
           $0.CoreInfoResponse.fromBuffer);
   static final _$startService =
       $grpc.ClientMethod<$0.StartRequest, $0.CoreInfoResponse>(
@@ -352,14 +352,14 @@ abstract class CoreServiceBase extends $grpc.Service {
         false,
         ($core.List<$core.int> value) => $0.ParseRequest.fromBuffer(value),
         ($0.ParseResponse value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$0.ChangeHiddifySettingsRequest,
+    $addMethod($grpc.ServiceMethod<$0.ChangeV2ray StkSettingsRequest,
             $0.CoreInfoResponse>(
-        'ChangeHiddifySettings',
-        changeHiddifySettings_Pre,
+        'ChangeV2ray StkSettings',
+        changeV2ray StkSettings_Pre,
         false,
         false,
         ($core.List<$core.int> value) =>
-            $0.ChangeHiddifySettingsRequest.fromBuffer(value),
+            $0.ChangeV2ray StkSettingsRequest.fromBuffer(value),
         ($0.CoreInfoResponse value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.StartRequest, $0.CoreInfoResponse>(
         'StartService',
@@ -516,14 +516,14 @@ abstract class CoreServiceBase extends $grpc.Service {
   $async.Future<$0.ParseResponse> parse(
       $grpc.ServiceCall call, $0.ParseRequest request);
 
-  $async.Future<$0.CoreInfoResponse> changeHiddifySettings_Pre(
+  $async.Future<$0.CoreInfoResponse> changeV2ray StkSettings_Pre(
       $grpc.ServiceCall $call,
-      $async.Future<$0.ChangeHiddifySettingsRequest> $request) async {
-    return changeHiddifySettings($call, await $request);
+      $async.Future<$0.ChangeV2ray StkSettingsRequest> $request) async {
+    return changeV2ray StkSettings($call, await $request);
   }
 
-  $async.Future<$0.CoreInfoResponse> changeHiddifySettings(
-      $grpc.ServiceCall call, $0.ChangeHiddifySettingsRequest request);
+  $async.Future<$0.CoreInfoResponse> changeV2ray StkSettings(
+      $grpc.ServiceCall call, $0.ChangeV2ray StkSettingsRequest request);
 
   $async.Future<$0.CoreInfoResponse> startService_Pre(
       $grpc.ServiceCall $call, $async.Future<$0.StartRequest> $request) async {

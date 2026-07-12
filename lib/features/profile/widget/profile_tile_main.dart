@@ -2,11 +2,11 @@ import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
-import 'package:hiddify/core/localization/translations.dart';
-import 'package:hiddify/core/router/dialog/dialog_notifier.dart';
-import 'package:hiddify/features/profile/model/profile_entity.dart';
-import 'package:hiddify/features/profile/notifier/profile_notifier.dart';
-import 'package:hiddify/utils/utils.dart';
+import 'package:v2raystk/core/localization/translations.dart';
+import 'package:v2raystk/core/router/dialog/dialog_notifier.dart';
+import 'package:v2raystk/features/profile/model/profile_entity.dart';
+import 'package:v2raystk/features/profile/notifier/profile_notifier.dart';
+import 'package:v2raystk/utils/utils.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -16,7 +16,7 @@ class ProfileTileMain extends HookConsumerWidget {
   final ProfileEntity profile;
   final bool isMain;
   static const verifiedDomains = [
-    'hiddify.com',
+    'v2raystk.com',
     // 't.me',
     // 'telegram.me',
     // 'instagram.com',
@@ -24,11 +24,11 @@ class ProfileTileMain extends HookConsumerWidget {
     // 'facebook.com',
   ];
   static const verifiedLinks = [
-    'https://t.me/hiddify',
-    'https://t.me/hiddify_board',
-    'https://instagram.com/hiddify_com',
-    'https://x.com/hiddify_com',
-    'https://facebook.com/hiddify',
+    'https://t.me/v2raystk',
+    'https://t.me/v2raystk_board',
+    'https://instagram.com/v2raystk_com',
+    'https://x.com/v2raystk_com',
+    'https://facebook.com/v2raystk',
   ];
   Future<void> _launchUrlWithCheck(BuildContext context, WidgetRef ref, String url) async {
     final uri = Uri.parse(url);
@@ -183,7 +183,7 @@ class ProfileTileMain extends HookConsumerWidget {
     if (host.endsWith('facebook.com')) {
       return FontAwesomeIcons.facebook;
     }
-    if (host.endsWith('hiddify.com')) {
+    if (host.endsWith('v2raystk.com')) {
       // return IconData();
     }
     return icon ?? FluentIcons.link_24_regular;
@@ -205,8 +205,8 @@ class ProfileTileMain extends HookConsumerWidget {
     if (host.endsWith('facebook.com')) {
       return uri.pathSegments.lastWhere((e) => e.isNotEmpty, orElse: () => '');
     }
-    if (host.endsWith('hiddify.com')) {
-      return "Hiddify";
+    if (host.endsWith('v2raystk.com')) {
+      return "V2ray Stk";
     }
     return uri.host;
   }

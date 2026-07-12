@@ -1,5 +1,5 @@
-import 'package:hiddify/core/db/provider/db_providers.dart';
-import 'package:hiddify/features/per_app_proxy/data/app_proxy_data_source.dart';
+import 'package:v2raystk/core/db/provider/db_providers.dart';
+import 'package:v2raystk/features/per_app_proxy/data/app_proxy_data_source.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

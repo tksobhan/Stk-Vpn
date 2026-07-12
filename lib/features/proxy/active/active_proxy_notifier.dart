@@ -1,18 +1,18 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
-import 'package:hiddify/core/haptic/haptic_service.dart';
-import 'package:hiddify/core/preferences/general_preferences.dart';
-import 'package:hiddify/core/utils/throttler.dart';
-import 'package:hiddify/features/connection/notifier/connection_notifier.dart';
-import 'package:hiddify/features/proxy/data/proxy_data_providers.dart';
-import 'package:hiddify/features/proxy/data/proxy_repository.dart';
-import 'package:hiddify/features/proxy/model/ip_info_entity.dart' as oldipinfo;
-import 'package:hiddify/features/proxy/model/proxy_failure.dart';
-import 'package:hiddify/hiddifycore/generated/v2/hcore/hcore.pb.dart';
+import 'package:v2raystk/core/haptic/haptic_service.dart';
+import 'package:v2raystk/core/preferences/general_preferences.dart';
+import 'package:v2raystk/core/utils/throttler.dart';
+import 'package:v2raystk/features/connection/notifier/connection_notifier.dart';
+import 'package:v2raystk/features/proxy/data/proxy_data_providers.dart';
+import 'package:v2raystk/features/proxy/data/proxy_repository.dart';
+import 'package:v2raystk/features/proxy/model/ip_info_entity.dart' as oldipinfo;
+import 'package:v2raystk/features/proxy/model/proxy_failure.dart';
+import 'package:v2raystk/v2raystkcore/generated/v2/hcore/hcore.pb.dart';
 
-import 'package:hiddify/utils/riverpod_utils.dart';
-import 'package:hiddify/utils/utils.dart';
+import 'package:v2raystk/utils/riverpod_utils.dart';
+import 'package:v2raystk/utils/utils.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'active_proxy_notifier.g.dart';
@@ -46,7 +46,7 @@ class IpInfoNotifier extends _$IpInfoNotifier with AppLogger {
     _forceCheck = false;
     final info = await ref.watch(proxyRepositoryProvider).getCurrentIpInfo(cancelToken).getOrElse((err) {
       loggy.warning("error getting proxy ip info", err, StackTrace.current);
-      // throw err; //hiddify: remove exception to be logged
+      // throw err; //v2raystk: remove exception to be logged
       throw const UnknownIp();
     }).run();
 

@@ -1688,64 +1688,64 @@ class ParseResponse extends $pb.GeneratedMessage {
   void clearMessage() => $_clearField(3);
 }
 
-class ChangeHiddifySettingsRequest extends $pb.GeneratedMessage {
-  factory ChangeHiddifySettingsRequest({
-    $core.String? hiddifySettingsJson,
+class ChangeV2ray StkSettingsRequest extends $pb.GeneratedMessage {
+  factory ChangeV2ray StkSettingsRequest({
+    $core.String? v2raystkSettingsJson,
   }) {
     final result = create();
-    if (hiddifySettingsJson != null)
-      result.hiddifySettingsJson = hiddifySettingsJson;
+    if (v2raystkSettingsJson != null)
+      result.v2raystkSettingsJson = v2raystkSettingsJson;
     return result;
   }
 
-  ChangeHiddifySettingsRequest._();
+  ChangeV2ray StkSettingsRequest._();
 
-  factory ChangeHiddifySettingsRequest.fromBuffer($core.List<$core.int> data,
+  factory ChangeV2ray StkSettingsRequest.fromBuffer($core.List<$core.int> data,
           [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(data, registry);
-  factory ChangeHiddifySettingsRequest.fromJson($core.String json,
+  factory ChangeV2ray StkSettingsRequest.fromJson($core.String json,
           [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      _omitMessageNames ? '' : 'ChangeHiddifySettingsRequest',
+      _omitMessageNames ? '' : 'ChangeV2ray StkSettingsRequest',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'hcore'),
       createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'hiddifySettingsJson')
+    ..aOS(1, _omitFieldNames ? '' : 'v2raystkSettingsJson')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
-  ChangeHiddifySettingsRequest clone() => deepCopy();
+  ChangeV2ray StkSettingsRequest clone() => deepCopy();
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
-  ChangeHiddifySettingsRequest copyWith(
-          void Function(ChangeHiddifySettingsRequest) updates) =>
+  ChangeV2ray StkSettingsRequest copyWith(
+          void Function(ChangeV2ray StkSettingsRequest) updates) =>
       super.copyWith(
-              (message) => updates(message as ChangeHiddifySettingsRequest))
-          as ChangeHiddifySettingsRequest;
+              (message) => updates(message as ChangeV2ray StkSettingsRequest))
+          as ChangeV2ray StkSettingsRequest;
 
   @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
-  static ChangeHiddifySettingsRequest create() =>
-      ChangeHiddifySettingsRequest._();
+  static ChangeV2ray StkSettingsRequest create() =>
+      ChangeV2ray StkSettingsRequest._();
   @$core.override
-  ChangeHiddifySettingsRequest createEmptyInstance() => create();
-  static $pb.PbList<ChangeHiddifySettingsRequest> createRepeated() =>
-      $pb.PbList<ChangeHiddifySettingsRequest>();
+  ChangeV2ray StkSettingsRequest createEmptyInstance() => create();
+  static $pb.PbList<ChangeV2ray StkSettingsRequest> createRepeated() =>
+      $pb.PbList<ChangeV2ray StkSettingsRequest>();
   @$core.pragma('dart2js:noInline')
-  static ChangeHiddifySettingsRequest getDefault() => _defaultInstance ??=
-      $pb.GeneratedMessage.$_defaultFor<ChangeHiddifySettingsRequest>(create);
-  static ChangeHiddifySettingsRequest? _defaultInstance;
+  static ChangeV2ray StkSettingsRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<ChangeV2ray StkSettingsRequest>(create);
+  static ChangeV2ray StkSettingsRequest? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.String get hiddifySettingsJson => $_getSZ(0);
+  $core.String get v2raystkSettingsJson => $_getSZ(0);
   @$pb.TagNumber(1)
-  set hiddifySettingsJson($core.String value) => $_setString(0, value);
+  set v2raystkSettingsJson($core.String value) => $_setString(0, value);
   @$pb.TagNumber(1)
-  $core.bool hasHiddifySettingsJson() => $_has(0);
+  $core.bool hasV2ray StkSettingsJson() => $_has(0);
   @$pb.TagNumber(1)
-  void clearHiddifySettingsJson() => $_clearField(1);
+  void clearV2ray StkSettingsJson() => $_clearField(1);
 }
 
 class GenerateConfigRequest extends $pb.GeneratedMessage {

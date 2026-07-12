@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:hiddify/core/localization/translations.dart';
-import 'package:hiddify/core/notification/in_app_notification_controller.dart';
-import 'package:hiddify/core/preferences/general_preferences.dart';
-import 'package:hiddify/features/per_app_proxy/data/selected_data_provider.dart';
-import 'package:hiddify/features/per_app_proxy/model/per_app_proxy_mode.dart';
-import 'package:hiddify/features/per_app_proxy/overview/per_app_proxy_notifier.dart';
+import 'package:v2raystk/core/localization/translations.dart';
+import 'package:v2raystk/core/notification/in_app_notification_controller.dart';
+import 'package:v2raystk/core/preferences/general_preferences.dart';
+import 'package:v2raystk/features/per_app_proxy/data/selected_data_provider.dart';
+import 'package:v2raystk/features/per_app_proxy/model/per_app_proxy_mode.dart';
+import 'package:v2raystk/features/per_app_proxy/overview/per_app_proxy_notifier.dart';
 import 'package:installed_apps/index.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

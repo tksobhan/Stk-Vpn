@@ -1,6 +1,6 @@
 // This is a generated file - do not edit.
 //
-// Generated from v2/hiddifyoptions/hiddify_options.proto.
+// Generated from v2/v2raystkoptions/v2raystk_options.proto.
 
 // @dart = 3.3
 

@@ -4,47 +4,47 @@ import 'dart:math';
 
 import 'package:ffi/ffi.dart';
 import 'package:grpc/grpc.dart';
-import 'package:hiddify/core/model/directories.dart';
-import 'package:hiddify/gen/hiddify_core_generated_bindings.dart';
-import 'package:hiddify/hiddifycore/core_interface/core_interface.dart';
-import 'package:hiddify/hiddifycore/core_interface/mtls_channel_cred.dart';
-import 'package:hiddify/hiddifycore/generated/v2/hcore/hcore.pb.dart';
-import 'package:hiddify/hiddifycore/generated/v2/hcore/hcore_service.pbgrpc.dart';
-import 'package:hiddify/hiddifycore/generated/v2/hello/hello.pb.dart';
-import 'package:hiddify/hiddifycore/generated/v2/hello/hello_service.pbgrpc.dart';
-import 'package:hiddify/utils/custom_loggers.dart';
+import 'package:v2raystk/core/model/directories.dart';
+import 'package:v2raystk/gen/v2raystk_core_generated_bindings.dart';
+import 'package:v2raystk/v2raystkcore/core_interface/core_interface.dart';
+import 'package:v2raystk/v2raystkcore/core_interface/mtls_channel_cred.dart';
+import 'package:v2raystk/v2raystkcore/generated/v2/hcore/hcore.pb.dart';
+import 'package:v2raystk/v2raystkcore/generated/v2/hcore/hcore_service.pbgrpc.dart';
+import 'package:v2raystk/v2raystkcore/generated/v2/hello/hello.pb.dart';
+import 'package:v2raystk/v2raystkcore/generated/v2/hello/hello_service.pbgrpc.dart';
+import 'package:v2raystk/utils/custom_loggers.dart';
 
 import 'package:loggy/loggy.dart';
 
 import 'package:path/path.dart' as p;
 
-final _logger = Loggy('HiddifyCoreFFI');
+final _logger = Loggy('V2ray StkCoreFFI');
 typedef StopFunc = Pointer<Utf8> Function();
 typedef StopFuncDart = Pointer<Utf8> Function();
 
 class CoreInterfaceDesktop extends CoreInterface with InfraLogger {
-  static final HiddifyCoreNativeLibrary _box = _gen();
+  static final V2ray StkCoreNativeLibrary _box = _gen();
 
-  static HiddifyCoreNativeLibrary _gen() {
+  static V2ray StkCoreNativeLibrary _gen() {
     String fullPath = "";
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
-      fullPath = "hiddify-core";
+      fullPath = "v2raystk-core";
     }
     if (Platform.isWindows) {
-      fullPath = p.join(fullPath, "hiddify-core.dll");
+      fullPath = p.join(fullPath, "v2raystk-core.dll");
     } else if (Platform.isMacOS) {
-      fullPath = p.join(fullPath, "hiddify-core.dylib");
+      fullPath = p.join(fullPath, "v2raystk-core.dylib");
     } else {
-      fullPath = p.join(fullPath, "hiddify-core.so");
+      fullPath = p.join(fullPath, "v2raystk-core.so");
     }
 
-    _logger.debug('hiddify-core native libs path: "$fullPath"');
+    _logger.debug('v2raystk-core native libs path: "$fullPath"');
     final lib = DynamicLibrary.open(fullPath);
     // final stopFunc = lib.lookup<NativeFunction<StopFunc>>('stop').asFunction<StopFunc>();
     // final errPtr2 = stopFunc();
     // final err = errPtr2.cast<Utf8>().toDartString();
 
-    return HiddifyCoreNativeLibrary(lib);
+    return V2ray StkCoreNativeLibrary(lib);
   }
 
   Future<bool> isMusl() async {

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hiddify/core/localization/translations.dart';
-import 'package:hiddify/core/router/dialog/dialog_notifier.dart';
-import 'package:hiddify/core/router/go_router/helper/active_breakpoint_notifier.dart';
-import 'package:hiddify/features/profile/notifier/active_profile_notifier.dart';
-import 'package:hiddify/features/settings/notifier/config_option/config_option_notifier.dart';
-import 'package:hiddify/features/settings/notifier/reset_tunnel/reset_tunnel_notifier.dart';
-import 'package:hiddify/utils/utils.dart';
+import 'package:v2raystk/core/localization/translations.dart';
+import 'package:v2raystk/core/router/dialog/dialog_notifier.dart';
+import 'package:v2raystk/core/router/go_router/helper/active_breakpoint_notifier.dart';
+import 'package:v2raystk/features/profile/notifier/active_profile_notifier.dart';
+import 'package:v2raystk/features/settings/notifier/config_option/config_option_notifier.dart';
+import 'package:v2raystk/features/settings/notifier/reset_tunnel/reset_tunnel_notifier.dart';
+import 'package:v2raystk/utils/utils.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 enum ConfigOptionSection {

@@ -1,8 +1,8 @@
-import 'package:hiddify/core/directories/directories_provider.dart';
-import 'package:hiddify/features/connection/data/connection_repository.dart';
-import 'package:hiddify/features/profile/data/profile_data_providers.dart';
-import 'package:hiddify/features/settings/data/config_option_data_providers.dart';
-import 'package:hiddify/hiddifycore/hiddify_core_service_provider.dart';
+import 'package:v2raystk/core/directories/directories_provider.dart';
+import 'package:v2raystk/features/connection/data/connection_repository.dart';
+import 'package:v2raystk/features/profile/data/profile_data_providers.dart';
+import 'package:v2raystk/features/settings/data/config_option_data_providers.dart';
+import 'package:v2raystk/v2raystkcore/v2raystk_core_service_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -14,7 +14,7 @@ ConnectionRepository connectionRepository(Ref ref) {
     ref: ref,
     directories: ref.watch(appDirectoriesProvider).requireValue,
     configOptionRepository: ref.watch(configOptionRepositoryProvider),
-    singbox: ref.watch(hiddifyCoreServiceProvider),
+    singbox: ref.watch(v2raystkCoreServiceProvider),
     profilePathResolver: ref.watch(profilePathResolverProvider),
   );
 }

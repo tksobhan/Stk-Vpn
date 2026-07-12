@@ -4,14 +4,14 @@ import 'dart:io';
 import 'package:dartx/dartx.dart';
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:hiddify/core/db/db.dart';
-import 'package:hiddify/core/http_client/dio_http_client.dart';
-import 'package:hiddify/features/profile/data/profile_data_mapper.dart';
-import 'package:hiddify/features/profile/model/profile_entity.dart';
-import 'package:hiddify/features/profile/model/profile_failure.dart';
-import 'package:hiddify/features/settings/data/config_option_repository.dart';
-import 'package:hiddify/singbox/model/singbox_proxy_type.dart';
-import 'package:hiddify/utils/utils.dart';
+import 'package:v2raystk/core/db/db.dart';
+import 'package:v2raystk/core/http_client/dio_http_client.dart';
+import 'package:v2raystk/features/profile/data/profile_data_mapper.dart';
+import 'package:v2raystk/features/profile/model/profile_entity.dart';
+import 'package:v2raystk/features/profile/model/profile_failure.dart';
+import 'package:v2raystk/features/settings/data/config_option_repository.dart';
+import 'package:v2raystk/singbox/model/singbox_proxy_type.dart';
+import 'package:v2raystk/utils/utils.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:meta/meta.dart';
 
@@ -32,7 +32,7 @@ class ProfileParser {
   // missing). It MUST stay above the 10 TB "unlimited" threshold the UI uses to decide whether to show
   // "∞" (isInfinitSize() in lib/utils/number_formatters.dart, and profile_tile.dart). The previous
   // value (~857 GiB) was below that gate, so total=0 rendered as a finite cap / "quota exceeded".
-  // See https://github.com/hiddify/hiddify-app/issues/1974 . 1000 TiB.
+  // See https://github.com/v2raystk/v2raystk-app/issues/1974 . 1000 TiB.
   static const infiniteTrafficThreshold = 1_099_511_627_776_000;
   static const infiniteTimeThreshold = 92_233_720_368;
   static const allowedOverrideConfigs = [
@@ -161,7 +161,7 @@ class ProfileParser {
           tempFilePath,
           cancelToken: cancelToken,
           userAgent: _ref.read(ConfigOptions.useXrayCoreWhenPossible)
-              ? _httpClient.userAgent.replaceAll("HiddifyNext", "HiddifyNextX")
+              ? _httpClient.userAgent.replaceAll("V2ray StkNext", "V2ray StkNextX")
               : null,
         )
         .catchError((err) {
@@ -219,7 +219,7 @@ class ProfileParser {
             tmpPath,
             cancelToken: cancelToken,
             userAgent: ref.read(ConfigOptions.useXrayCoreWhenPossible)
-                ? httpClient.userAgent.replaceAll('HiddifyNext', 'HiddifyNextX')
+                ? httpClient.userAgent.replaceAll('V2ray StkNext', 'V2ray StkNextX')
                 : null,
           );
 

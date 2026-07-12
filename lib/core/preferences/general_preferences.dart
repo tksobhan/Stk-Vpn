@@ -1,15 +1,15 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:hiddify/core/app_info/app_info_provider.dart';
-import 'package:hiddify/core/model/environment.dart';
-import 'package:hiddify/core/model/region.dart';
-import 'package:hiddify/core/preferences/actions_at_closing.dart';
+import 'package:v2raystk/core/app_info/app_info_provider.dart';
+import 'package:v2raystk/core/model/environment.dart';
+import 'package:v2raystk/core/model/region.dart';
+import 'package:v2raystk/core/preferences/actions_at_closing.dart';
 
-import 'package:hiddify/core/preferences/preferences_provider.dart';
-import 'package:hiddify/core/utils/preferences_utils.dart';
-import 'package:hiddify/features/per_app_proxy/model/per_app_proxy_mode.dart';
-import 'package:hiddify/features/window/notifier/window_notifier.dart';
-import 'package:hiddify/utils/platform_utils.dart';
+import 'package:v2raystk/core/preferences/preferences_provider.dart';
+import 'package:v2raystk/core/utils/preferences_utils.dart';
+import 'package:v2raystk/features/per_app_proxy/model/per_app_proxy_mode.dart';
+import 'package:v2raystk/features/window/notifier/window_notifier.dart';
+import 'package:v2raystk/utils/platform_utils.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'general_preferences.g.dart';

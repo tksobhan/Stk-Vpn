@@ -39,12 +39,12 @@ const ProfileEntity$json = {
       '10': 'subInfo'
     },
     {
-      '1': 'override_hiddify_options',
+      '1': 'override_v2raystk_options',
       '3': 8,
       '4': 1,
       '5': 11,
-      '6': '.hiddifyoptions.HiddifyOptions',
-      '10': 'overrideHiddifyOptions'
+      '6': '.v2raystkoptions.V2ray StkOptions',
+      '10': 'overrideV2ray StkOptions'
     },
   ],
 };

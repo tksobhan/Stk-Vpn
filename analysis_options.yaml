@@ -4,7 +4,7 @@ analyzer:
   plugins:
     - custom_lint
   exclude:
-    - "hiddify-core/**"
+    - "v2raystk-core/**"
     - "**.g.dart"
     - "lib/gen/**"
   errors:

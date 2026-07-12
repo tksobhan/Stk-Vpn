@@ -1,4 +1,4 @@
-name: hiddify
+name: v2raystk
 description: Cross Platform Multi Protocol Proxy Frontend.
 publish_to: "none"
 version: 4.1.2+40102
@@ -88,7 +88,7 @@ dependencies:
   in_app_review: ^2.0.10
   # circle_flags: ^4.0.2
   circle_flags:
-    git: https://github.com/hiddify-com/flutter_circle_flags.git
+    git: https://github.com/v2raystk-com/flutter_circle_flags.git
   fixnum: ^1.1.0
   # # for using protobuf install protoc from this link -> https://github.com/protocolbuffers/protobuf/releases
   # # then add path to "environment variable" e.g. -> C:\src\protoc-28.3-win64\bin
@@ -182,12 +182,12 @@ flutter_native_splash:
     image: assets/images/source/ic_launcher_foreground.png
 
 ffigen:
-  name: "HiddifyCoreNativeLibrary"
-  description: "Bindings to Hiddify Core Library"
-  output: "lib/gen/hiddify_core_generated_bindings.dart"
+  name: "V2ray StkCoreNativeLibrary"
+  description: "Bindings to V2ray Stk Core Library"
+  output: "lib/gen/v2raystk_core_generated_bindings.dart"
   headers:
     entry-points:
-      - "hiddify-core/bin/desktop.h"
+      - "v2raystk-core/bin/desktop.h"
 
 sentry:
   upload_debug_symbols: true

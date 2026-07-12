@@ -1,6 +1,6 @@
 // This is a generated file - do not edit.
 //
-// Generated from v2/hiddifyoptions/hiddify_options.proto.
+// Generated from v2/v2raystkoptions/v2raystk_options.proto.
 
 // @dart = 3.3
 
@@ -31,9 +31,9 @@ final $typed_data.Uint8List domainStrategyDescriptor = $convert.base64Decode(
     'Cg5Eb21haW5TdHJhdGVneRIJCgVhc19pcxAAEg8KC3ByZWZlcl9pcHY0EAESDwoLcHJlZmVyX2'
     'lwdjYQAhINCglpcHY0X29ubHkQAxINCglpcHY2X29ubHkQBA==');
 
-@$core.Deprecated('Use hiddifyOptionsDescriptor instead')
-const HiddifyOptions$json = {
-  '1': 'HiddifyOptions',
+@$core.Deprecated('Use v2raystkOptionsDescriptor instead')
+const V2ray StkOptions$json = {
+  '1': 'V2ray StkOptions',
   '2': [
     {
       '1': 'enable_full_config',
@@ -61,7 +61,7 @@ const HiddifyOptions$json = {
       '3': 10,
       '4': 3,
       '5': 11,
-      '6': '.hiddifyoptions.Rule',
+      '6': '.v2raystkoptions.Rule',
       '10': 'rules'
     },
     {
@@ -69,7 +69,7 @@ const HiddifyOptions$json = {
       '3': 11,
       '4': 1,
       '5': 11,
-      '6': '.hiddifyoptions.WarpOptions',
+      '6': '.v2raystkoptions.WarpOptions',
       '10': 'warp'
     },
     {
@@ -77,7 +77,7 @@ const HiddifyOptions$json = {
       '3': 12,
       '4': 1,
       '5': 11,
-      '6': '.hiddifyoptions.WarpOptions',
+      '6': '.v2raystkoptions.WarpOptions',
       '10': 'warp2'
     },
     {
@@ -85,7 +85,7 @@ const HiddifyOptions$json = {
       '3': 13,
       '4': 1,
       '5': 11,
-      '6': '.hiddifyoptions.MuxOptions',
+      '6': '.v2raystkoptions.MuxOptions',
       '10': 'mux'
     },
     {
@@ -93,7 +93,7 @@ const HiddifyOptions$json = {
       '3': 14,
       '4': 1,
       '5': 11,
-      '6': '.hiddifyoptions.TLSTricks',
+      '6': '.v2raystkoptions.TLSTricks',
       '10': 'tlsTricks'
     },
     {
@@ -101,7 +101,7 @@ const HiddifyOptions$json = {
       '3': 15,
       '4': 1,
       '5': 11,
-      '6': '.hiddifyoptions.DNSOptions',
+      '6': '.v2raystkoptions.DNSOptions',
       '10': 'dnsOptions'
     },
     {
@@ -109,7 +109,7 @@ const HiddifyOptions$json = {
       '3': 16,
       '4': 1,
       '5': 11,
-      '6': '.hiddifyoptions.InboundOptions',
+      '6': '.v2raystkoptions.InboundOptions',
       '10': 'inboundOptions'
     },
     {
@@ -117,7 +117,7 @@ const HiddifyOptions$json = {
       '3': 17,
       '4': 1,
       '5': 11,
-      '6': '.hiddifyoptions.URLTestOptions',
+      '6': '.v2raystkoptions.URLTestOptions',
       '10': 'urlTestOptions'
     },
     {
@@ -125,14 +125,14 @@ const HiddifyOptions$json = {
       '3': 18,
       '4': 1,
       '5': 11,
-      '6': '.hiddifyoptions.RouteOptions',
+      '6': '.v2raystkoptions.RouteOptions',
       '10': 'routeOptions'
     },
   ],
 };
 
-/// Descriptor for `HiddifyOptions`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List hiddifyOptionsDescriptor = $convert.base64Decode(
+/// Descriptor for `V2ray StkOptions`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List v2raystkOptionsDescriptor = $convert.base64Decode(
     'Cg5IaWRkaWZ5T3B0aW9ucxIsChJlbmFibGVfZnVsbF9jb25maWcYASABKAhSEGVuYWJsZUZ1bG'
     'xDb25maWcSGwoJbG9nX2xldmVsGAIgASgJUghsb2dMZXZlbBIZCghsb2dfZmlsZRgDIAEoCVIH'
     'bG9nRmlsZRIoChBlbmFibGVfY2xhc2hfYXBpGAQgASgIUg5lbmFibGVDbGFzaEFwaRIkCg5jbG'
@@ -179,7 +179,7 @@ const DNSOptions$json = {
       '3': 2,
       '4': 1,
       '5': 14,
-      '6': '.hiddifyoptions.DomainStrategy',
+      '6': '.v2raystkoptions.DomainStrategy',
       '10': 'remoteDnsDomainStrategy'
     },
     {
@@ -194,7 +194,7 @@ const DNSOptions$json = {
       '3': 4,
       '4': 1,
       '5': 14,
-      '6': '.hiddifyoptions.DomainStrategy',
+      '6': '.v2raystkoptions.DomainStrategy',
       '10': 'directDnsDomainStrategy'
     },
     {
@@ -295,7 +295,7 @@ const RouteOptions$json = {
       '3': 2,
       '4': 1,
       '5': 14,
-      '6': '.hiddifyoptions.DomainStrategy',
+      '6': '.v2raystkoptions.DomainStrategy',
       '10': 'ipv6Mode'
     },
     {'1': 'bypass_lan', '3': 3, '4': 1, '5': 8, '10': 'bypassLan'},
@@ -326,7 +326,7 @@ const TLSTricks$json = {
       '3': 2,
       '4': 1,
       '5': 11,
-      '6': '.hiddifyoptions.IntRange',
+      '6': '.v2raystkoptions.IntRange',
       '10': 'fragmentSize'
     },
     {
@@ -334,7 +334,7 @@ const TLSTricks$json = {
       '3': 3,
       '4': 1,
       '5': 11,
-      '6': '.hiddifyoptions.IntRange',
+      '6': '.v2raystkoptions.IntRange',
       '10': 'fragmentSleep'
     },
     {'1': 'mixed_sni_case', '3': 4, '4': 1, '5': 8, '10': 'mixedSniCase'},
@@ -344,7 +344,7 @@ const TLSTricks$json = {
       '3': 6,
       '4': 1,
       '5': 11,
-      '6': '.hiddifyoptions.IntRange',
+      '6': '.v2raystkoptions.IntRange',
       '10': 'paddingSize'
     },
   ],
@@ -388,7 +388,7 @@ const WarpOptions$json = {
       '3': 5,
       '4': 1,
       '5': 11,
-      '6': '.hiddifyoptions.WarpWireguardConfig',
+      '6': '.v2raystkoptions.WarpWireguardConfig',
       '10': 'wireguardConfig'
     },
     {'1': 'fake_packets', '3': 6, '4': 1, '5': 9, '10': 'fakePackets'},
@@ -397,7 +397,7 @@ const WarpOptions$json = {
       '3': 7,
       '4': 1,
       '5': 11,
-      '6': '.hiddifyoptions.IntRange',
+      '6': '.v2raystkoptions.IntRange',
       '10': 'fakePacketSize'
     },
     {
@@ -405,7 +405,7 @@ const WarpOptions$json = {
       '3': 8,
       '4': 1,
       '5': 11,
-      '6': '.hiddifyoptions.IntRange',
+      '6': '.v2raystkoptions.IntRange',
       '10': 'fakePacketDelay'
     },
     {'1': 'fake_packet_mode', '3': 9, '4': 1, '5': 9, '10': 'fakePacketMode'},
@@ -416,7 +416,7 @@ const WarpOptions$json = {
       '3': 12,
       '4': 1,
       '5': 11,
-      '6': '.hiddifyoptions.WarpAccount',
+      '6': '.v2raystkoptions.WarpAccount',
       '10': 'account'
     },
   ],
